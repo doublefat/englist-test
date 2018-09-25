@@ -30,6 +30,10 @@ class ExampleController extends BasicController{
 		$this->setLayout("ajax.phtml");
 		$this->set("exa3", "Hello World, ajax");
 	}
+
+	public function phpinfo(){
+
+    }
 }
 
 ?>
