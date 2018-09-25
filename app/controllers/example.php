@@ -20,6 +20,7 @@ class ExampleController extends BasicController{
 
 
 		$this->set('exa1','hello');
+		$this->set('final_score',500);
         $this->view->exa2=array('world',' .');
 
 
