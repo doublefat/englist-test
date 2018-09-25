@@ -7,7 +7,7 @@ class IndexController extends BasicController{
 		
 		
 		$this->set("title","I am Index page");
-		$this->set('message','hellow');
+		$this->set('message','helloword');
 		
 		
 	}
