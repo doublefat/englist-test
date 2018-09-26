@@ -46,6 +46,118 @@ function test($dbh)
 
 }
 
-echo "hello";
+function truncateQuetion($dbh,$table)
+{
 
-test(null);
+    $sql = "TRUNCATE TABLE ${table}";
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute();
+
+}
+
+
+function insertOneQuestion($dbh, $level, $num, $content, $a, $b, $c, $d)
+{
+
+    // echo "insert :".$question;
+    if (empty($content) || empty($a) || empty($b) || empty($c) || empty($d)) {
+        echo "wrong for num:[${num}] content:[${content}] a[${a}] b[${b}] c[${c}] d[${d}]\n";
+    } else {
+        //echo "will insert  for num:[${num}] content:[${content}] a[${a}] b[${b}] c[${c}] d[${d}]\n";
+        $q = new Questions();
+        $optons = array(array("content" => $a, "is_right" => 0),
+            array("content" => $b, "is_right" => 0),
+            array("content" => $c, "is_right" => 0),
+            array("content" => $d, "is_right" => 0));
+        $q->addQuestion($dbh, 1, 0, $level, $content, "", $optons);
+    }
+}
+
+function import($dbh,$filePath, $level)
+{
+    $qustionReg = "/(.*)______(\d+)\\.\s+(.*)/";
+    $handle = fopen($filePath, "r");
+    $start = 0;
+    $num = 0;
+    $content = "";
+
+    $a = "";
+    $b = "";
+    $c = "";
+    $d = "";
+
+
+    if ($handle) {
+        while (($line = fgets($handle)) !== false) {
+            // process the line read.
+            preg_match($qustionReg, $line, $matches);
+            if (!empty($matches)) {
+                //print_r($matches);
+                //find question
+                if ($start != 0) {
+                    //save previous question
+
+
+                    insertOneQuestion($dbh, $level, $num, $content, $a, $b, $c, $d);
+
+                }
+
+                $start = 1;
+                $num = $matches[2];
+                $content = $matches[3];
+                $a = "";
+                $b = "";
+                $c = "";
+                $d = "";
+
+            } else {
+                preg_match("/A\\.\s+(.*)/", $line, $matches);
+                if (!empty($matches)) {
+                    //find A
+                    $a = $matches[1];
+                } else {
+                    preg_match("/B\\.\s+(.*)/", $line, $matches);
+                    if (!empty($matches)) {
+                        //find B
+                        $b = $matches[1];
+                    } else {
+                        preg_match("/C\\.\s+(.*)/", $line, $matches);
+                        if (!empty($matches)) {
+                            //find C
+                            $c = $matches[1];
+                        } else {
+                            preg_match("/D\\.\s+(.*)/", $line, $matches);
+                            if (!empty($matches)) {
+                                //find D
+                                $d = $matches[1];
+                            } else {
+                                if (!empty(trim($line))) {
+                                    $content = $content . $line;
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            // echo $line;
+        }
+        insertOneQuestion($dbh, $level, $num, $content, $a, $b, $c, $d);
+        fclose($handle);
+    } else {
+        // error opening the file.
+    }
+
+}
+$dbh = connectPDO();
+
+truncateQuetion($dbh,"`testing`.`question_option`");
+truncateQuetion($dbh,"`testing`.`question`");
+
+import($dbh,$currentDir . "/../../db/e_question.txt", 1);
+//import($currentDir . "/../../db/m_question.txt", 2);
+//import($currentDir . "/../../db/d_question.txt", 3);
+
+//test(null);

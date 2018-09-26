@@ -68,7 +68,7 @@ class Questions
 
         $runQuery = "INSERT INTO  ";
 
-        $runQuery .= "{$this->TESTING_QUESTION} as testing_question";
+        $runQuery .= "{$this->TESTING_QUESTION} ";
 
         $columns = "(";
         $values = " values( ";
@@ -114,7 +114,7 @@ class Questions
             $stmt->bindParam(':testing_question_associate_id', $testing_question_associate_id, PDO::PARAM_INT);
             $stmt->bindParam(':testing_question_level', $testing_question_level, PDO::PARAM_INT);
             $stmt->bindParam(':testing_question_detail', $testing_question_detail, PDO::PARAM_STR);
-            $stmt->bindParam(':testing_question_extra', $testing_question_extra, PDO::PARAM_INT);
+            $stmt->bindParam(':testing_question_extra', $testing_question_extra, PDO::PARAM_STR);
 
 
             $stmt_r = $stmt->execute();
@@ -141,7 +141,7 @@ class Questions
         $runQuery = "INSERT INTO  ";
 
 
-        $runQuery .= "{$this->TESTING_QUESTION_OPTION} as testing_question_option";
+        $runQuery .= "{$this->TESTING_QUESTION_OPTION} ";
 
 
         $columns = "(";
@@ -166,7 +166,7 @@ class Questions
 
         try {
             $stmt = $dbh->prepare($runQuery);
-            $dbh->beginTransaction();
+
             $errorFlag = false;
 
 
@@ -187,7 +187,7 @@ class Questions
 
         } catch (PDOException $x) {
             MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
-            $dbh->rollBack();
+
 
             throw $x;
         }
@@ -212,10 +212,23 @@ class Questions
                                 $testing_question_level,
                                 $testing_question_detail,
                                 $testing_question_extra);
-            foreach ($options as $oneOption){
-                $content=$oneOption['content'];
-                $isRight=$oneOption['is_right'];
-                $this->_addQuestionOption($dbh,$qId,$content,$isRight);
+            if(!empty($qId)){
+                foreach ($options as $oneOption){
+                    $content=$oneOption['content'];
+                    $isRight=$oneOption['is_right'];
+                    $re=$this->_addQuestionOption($dbh,$qId,$content,$isRight);
+                    if(empty($re)){
+                        $dbh->rollBack();
+                        return false;
+                    }
+
+                }
+                $dbh->commit();
+                return true;
+            }
+            else{
+                $dbh->rollBack();
+                return false;
             }
 
 
