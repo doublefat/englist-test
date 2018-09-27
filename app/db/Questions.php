@@ -19,6 +19,7 @@ class Questions
             $selectColumns .=", `type` `type`";
             $selectColumns .=", `associate_id` `associate_id`";
             $selectColumns .=", `level` `level`";
+            $selectColumns .=", `disable` `disable`";
             $selectColumns .=", `detail` `detail`";
             $selectColumns .=", `extra` `extra`";
             $selectColumns .=", `create_time` `create_time`";
@@ -85,72 +86,80 @@ class Questions
     }
 
 
-    private function _addQuestion($dbh, $testing_question_type, $testing_question_associate_id, $testing_question_level, $testing_question_detail, $testing_question_extra)
-    {
+    private function _addQuestion($dbh, $type, $disable, $associate_id, $level, $detail, $extra){
 
-        $runQuery = "INSERT INTO  ";
 
-        $runQuery .= "{$this->TESTING_QUESTION} ";
+        $runQuery="INSERT INTO  ";
+
+
+
+        $runQuery.="{$this->TESTING_QUESTION}";
+
+
 
         $columns = "(";
         $values = " values( ";
 
 
-        $columns .= ' `type`';
-        $values .= ':testing_question_type';
+        $columns .=' `type`';
+        $values .=':type';
 
-        $columns .= ',`associate_id`';
-        $values .= ',';
-        $values .= ':testing_question_associate_id';
+        $columns .=',`disable`';
+        $values .=',';$values .=':disable';
 
-        $columns .= ',`level`';
-        $values .= ',';
-        $values .= ':testing_question_level';
+        $columns .=',`associate_id`';
+        $values .=',';$values .=':associate_id';
 
-        $columns .= ',`detail`';
-        $values .= ',';
-        $values .= ':testing_question_detail';
+        $columns .=',`level`';
+        $values .=',';$values .=':level';
 
-        $columns .= ',`extra`';
-        $values .= ',';
-        $values .= ':testing_question_extra';
+        $columns .=',`detail`';
+        $values .=',';$values .=':detail';
 
-        $columns .= ',`create_time`';
-        $values .= ',';
-        $values .= 'now()';
+        $columns .=',`extra`';
+        $values .=',';$values .=':extra';
 
-        $columns .= ',`update_time`';
-        $values .= ',';
-        $values .= 'now()';
+        $columns .=',`create_time`';
+        $values .=',';$values .='now()';
+
+        $columns .=',`update_time`';
+        $values .=',';$values .='now()';
 
         $columns .= ")";
         $values .= ") ";
-        $runQuery .= $columns . $values;
+        $runQuery.=$columns.$values;
+
+
+
+
 
 
         try {
             $stmt = $dbh->prepare($runQuery);
 
 
-            $stmt->bindParam(':testing_question_type', $testing_question_type, PDO::PARAM_INT);
-            $stmt->bindParam(':testing_question_associate_id', $testing_question_associate_id, PDO::PARAM_INT);
-            $stmt->bindParam(':testing_question_level', $testing_question_level, PDO::PARAM_INT);
-            $stmt->bindParam(':testing_question_detail', $testing_question_detail, PDO::PARAM_STR);
-            $stmt->bindParam(':testing_question_extra', $testing_question_extra, PDO::PARAM_STR);
+            $stmt->bindParam(':type',$type,PDO::PARAM_INT);
+            $stmt->bindParam(':disable',$disable,PDO::PARAM_INT);
+            $stmt->bindParam(':associate_id',$associate_id,PDO::PARAM_INT);
+            $stmt->bindParam(':level',$level,PDO::PARAM_INT);
+            $stmt->bindParam(':detail',$detail,PDO::PARAM_STR);
+            $stmt->bindParam(':extra',$extra,PDO::PARAM_STR);
 
 
             $stmt_r = $stmt->execute();
-            if ($stmt_r) {
-                return $dbh->lastInsertId();
+            if($stmt_r){
+                return $dbh->lastInsertId ();
 
-            } else {
+            }
+            else {
 
-                MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
                 return false;
             }
 
-        } catch (PDOException $x) {
-            MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
+        }
+        catch ( PDOException $x ) {
+            MLog::e('db error info:' . $x->getMessage()." query:".$runQuery);
             throw $x;
         }
 
@@ -218,6 +227,7 @@ class Questions
 
 
     public function addQuestion($dbh, $testing_question_type,
+                                $testing_question_disable,
                                 $testing_question_associate_id,
                                 $testing_question_level,
                                 $testing_question_detail,
@@ -225,11 +235,13 @@ class Questions
                                 $options)
     {
 
+
         try {
 
             $dbh->beginTransaction();
 
             $qId = $this->_addQuestion($dbh, $testing_question_type,
+                $testing_question_disable,
                 $testing_question_associate_id,
                 $testing_question_level,
                 $testing_question_detail,
@@ -262,35 +274,48 @@ class Questions
     }
 
 
-    public function listQuestions($dbh, $pageNo, $pageSize)
-    {
+
+    public function listQuestions($dbh,$pageNo,$pageSize, $disable=null){
 
 
-        $runQuery = "no query yet";
+        $runQuery="no query yet";
         try {
-            $selectColumns = " SELECT ";
-            $selectColumns .= "`id` `id`";
-            $selectColumns .= ", `type` `type`";
-            $selectColumns .= ", `associate_id` `associate_id`";
-            $selectColumns .= ", `level` `level`";
-            $selectColumns .= ", `detail` `detail`";
-            $selectColumns .= ", `extra` `extra`";
-            $selectColumns .= ", `create_time` `create_time`";
-            $selectColumns .= ", `update_time` `update_time`";
-            $queryBase = " FROM ";
-            $queryBase .= "{$this->TESTING_QUESTION}";
+            $selectColumns =" SELECT ";
+            $selectColumns .="`id` `id`";
+            $selectColumns .=", `type` `type`";
+            $selectColumns .=", `disable` `disable`";
+            $selectColumns .=", `associate_id` `associate_id`";
+            $selectColumns .=", `level` `level`";
+            $selectColumns .=", `detail` `detail`";
+            $selectColumns .=", `extra` `extra`";
+            $selectColumns .=", `create_time` `create_time`";
+            $selectColumns .=", `update_time` `update_time`";
+            $queryBase=" FROM ";
+            $queryBase.="{$this->TESTING_QUESTION}";
+            if(isset($disable)){
+                $queryBase.=" WHERE " .'`disable` = :disable';
+            }
 
 
-            $order_clause = "";
 
 
-            $limit_clause = "";
+            $order_clause="";
+
+            $order_clause .=" ORDER BY ";
+            $order_clause.="`id`";
+
+            $limit_clause="";
 
 
-            $runQuery = "SELECT count(*) total " . $queryBase;
+
+
+
+            $runQuery="SELECT count(*) total ".$queryBase;
             $stmt = $dbh->prepare($runQuery);
 
-
+            if(isset($disable)) {
+                $stmt->bindParam(':disable', $disable, PDO::PARAM_INT);
+            }
             $stmt_rv = $stmt->execute();
 
             if ($stmt_rv) {
@@ -314,38 +339,45 @@ class Questions
                 }
 
                 $re = array();
-                $pageInfo = array('total' => $total, 'total_pages' => $totalPage, 'page_size' => $pageSize);
-                if ($pageNo < 1) {
-                    $pageNo = 1;
+                $pageInfo=array('total' => $total, 'total_pages' => $totalPage,'page_size' => $pageSize);
+                if($pageNo<1){
+                    $pageNo=1;
                 }
-                $pageInfo['page_no'] = $pageNo;
+                $pageInfo['page_no']=$pageNo;
 
                 $pageNo--;
-                if ($pageNo * $pageSize > $total) {
-                    $re['data'] = array();
-                } else {
-                    $from = $pageNo * $pageSize;
-                    $runQuery = $selectColumns . $queryBase . $order_clause . " limit {$from},{$pageSize}";
-                    $stmt2 = $dbh->prepare($runQuery);
+                if($pageNo*$pageSize>$total){
+                    $re['data']=array();
+                }
+                else{
+                    $from=$pageNo*$pageSize;
+                    $runQuery=$selectColumns. $queryBase.$order_clause." limit {$from},{$pageSize}";
+                    $stmt2= $dbh->prepare($runQuery);
 
 
+                    if(isset($disable)) {
+                        $stmt2->bindParam(':disable', $disable, PDO::PARAM_INT);
+                    }
                     $stmt_rv2 = $stmt2->execute();
-                    if ($stmt_rv2) {
-                        $re['data'] = $stmt2->fetchAll();
-                        $pageInfo['fetch_count'] = $stmt2->rowCount();
-                        $re['page_info'] = $pageInfo;
-                    } else {
-                        //$errorMessage='db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery;
-                        $re['data'] = false;
+                    if($stmt_rv2){
+                        $re['data']=$stmt2->fetchAll();
+                        $pageInfo['fetch_count']=$stmt2->rowCount();
+                        $re['page_info']=$pageInfo;
+                    }
+                    else{
+                        MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
+                        $re['data']=false;
                     }
                 }
                 return $re;
-            } else {
-                //$errorMessage='db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery;
+            }
+            else {
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
                 return false;
             }
-        } catch (PDOException $x) {
-            //$errorMessage='db error info:' . $x->getMessage()." query:".$runQuery;
+        }
+        catch ( PDOException $x ) {
+            MLog::e('db error info:' . $x->getMessage()." query:".$runQuery);
 
             throw $x;
         }
@@ -398,6 +430,8 @@ class Questions
         }
     }
 
+
+
     public function updateQuestion($dbh, $qid, $type, $associate_id, $level, $detail, $extra){
 
         $runQuery="UPDATE  ";
@@ -418,7 +452,7 @@ class Questions
 
         $setClumns .=',`extra`=';$setClumns .=':extra';
 
-        $setClumns .=',`update_time`=';$setClumns .='now()';
+        $setClumns .=',`update_time`=';$setClumns .='now';
 
         $runQuery.=$setClumns;$runQuery.=" WHERE " .'`id` = :qid';
 
@@ -437,9 +471,7 @@ class Questions
             }
             else {
 
-                $errorMessage='db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery;
-                MLog::e($errorMessage);
-               // echo "$errorMessage";
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
                 return false;
             }
 
@@ -448,7 +480,7 @@ class Questions
 
         }
         catch ( PDOException $x ) {
-            //$errorMessage='db error info:' . $x->getMessage()." query:".$runQuery;
+            MLog::e('db error info:' . $x->getMessage()." query:".$runQuery);
 
             throw $x;
         }
@@ -561,6 +593,47 @@ class Questions
     }
 
 
+    public function updateQuestionStatus($dbh, $pid, $disable){
+
+        $runQuery="UPDATE  ";
+
+        $runQuery.="{$this->TESTING_QUESTION}";
+
+
+        $setClumns = " SET ";
+        $setClumns .=' `disable`=';$setClumns .=':disable';
+
+        $setClumns .=',`update_time`=';$setClumns .='now()';
+
+        $runQuery.=$setClumns;$runQuery.=" WHERE " .'`id` = :pid';
+
+        try {
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':pid',$pid,PDO::PARAM_INT);
+            $stmt->bindParam(':disable',$disable,PDO::PARAM_INT);
+            $stmt_r = $stmt->execute();
+            if($stmt_r){
+                return $stmt->rowCount();
+            }
+            else {
+
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
+                return false;
+            }
+
+
+
+
+        }
+        catch ( PDOException $x ) {
+            MLog::e('db error info:' . $x->getMessage()." query:".$runQuery);
+
+            throw $x;
+        }
+
+    }
+
     public function  updateWholeQuestion($dbh,$qid,$type,$associateId,$level,$questionDetail,$options){
 
 
@@ -588,6 +661,9 @@ class Questions
     }
 
 
+    public function statusChange(){
+
+    }
 }
 
 ?>

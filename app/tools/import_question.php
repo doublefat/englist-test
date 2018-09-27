@@ -69,7 +69,7 @@ function insertOneQuestion($dbh, $level, $num, $content, $a, $b, $c, $d)
             array("content" => $b, "is_right" => 0),
             array("content" => $c, "is_right" => 0),
             array("content" => $d, "is_right" => 0));
-        $q->addQuestion($dbh, 1, 0, $level, $content, "", $optons);
+        $q->addQuestion($dbh, 1, 0,0, $level, $content, "", $optons);
     }
 }
 

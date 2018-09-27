@@ -9,6 +9,7 @@ class Admin_questionController extends BasicController
 
     var $optionIndexLetters = array("A", "B", "C", "D", "E", "F", "G", "H", "I");
     var $levelWords = array(1 => "Easy", 2 => "Medium", 3 => "Difficult");
+    var $statusWords = array(0 => "Enable", 1 => "Disable");
 
     public function pre_filter(&$methodName = null)
     {
@@ -44,7 +45,7 @@ class Admin_questionController extends BasicController
             $id = $one['id'];
             $qids[] = $id;
             $one['options'] = array();
-            $one['letterIndex'] = 0;
+
 
             if ($i % 2 == 0) {
                 $one["css_line"] = "odd_line";
@@ -52,22 +53,20 @@ class Admin_questionController extends BasicController
                 $one["css_line"] = "even_line";
             }
             $i++;
-            $one["level_word"] = $this->levelWords[$one['level']];
-            $data[$id] = $one;
+
+            $data[$id]['question'] = $one;
         }
 
         $options = $qo->loadOptionsByQuestionIds($dbh, $qids);
 
         foreach ($options as $one) {
-            $one['index'] = $this->optionIndexLetters[$data[$one['question_id']]['letterIndex']];
-            $data[$one['question_id']]['letterIndex'] = $data[$one['question_id']]['letterIndex'] + 1;
-            if(!empty($one['is_right'])){
-                $one['is_right_class']="is_right";
-            }
-            else{
-                $one['is_right_class']="is_not_right";
-            }
+
+
             $data[$one['question_id']]['options'][] = $one;
+        }
+
+        foreach ($data as $id=>&$qua) {
+            $this->prepareQuestion($qua);
         }
 
         $pageInfo = $questionInfo["page_info"];
@@ -83,12 +82,19 @@ class Admin_questionController extends BasicController
 
     private function prepareQuestion(&$questionDetail){
         $questionDetail["question"]["level_word"] = $this->levelWords[$questionDetail["question"]['level']];
+        $questionDetail["question"]["status_word"] = $this->statusWords[$questionDetail["question"]['disable']];
 
         $i=0;
         if(!empty($questionDetail["options"])){
             foreach ($questionDetail["options"] as &$oneOption){
                 $oneOption['index'] = $this->optionIndexLetters[$i];
                 $i++;
+                if(!empty($oneOption['is_right'])){
+                    $oneOption['is_right_class']="is_right";
+                }
+                else{
+                    $oneOption['is_right_class']="is_not_right";
+                }
             }
         }
     }
@@ -108,8 +114,21 @@ class Admin_questionController extends BasicController
         }
     }
 
+    public function show(){
+        $qid=$_REQUEST['qid'];
+        $dbh = connectPDO();
+        $qo = new Questions();
+        $questionDetail=$qo->loadOneQuestionWithOptions($dbh,$qid);
+        //dumpHtmlReadable($questionDetail);
+        if(!empty($questionDetail)){
+            $this->prepareQuestion($questionDetail);
+        }
+
+        $this->set("info", $questionDetail);
+    }
+
     public function save(){
-        dumpHtmlReadable($_POST);
+        //dumpHtmlReadable($_POST);
         $qid=$_POST['id'];
 
         $dbh = connectPDO();
@@ -147,24 +166,21 @@ class Admin_questionController extends BasicController
 
         $qo->updateWholeQuestion($dbh,$qid,$_POST["type"],$_POST["associate_id"],$_POST["level"],$_POST["detail"],$options);
 
-        $questionDetail=$qo->loadOneQuestionWithOptions($dbh,$qid);
-        //dumpHtmlReadable($questionDetail);
-        if(!empty($questionDetail)){
-            $this->prepareQuestion($questionDetail);
-        }
 
-        $this->set("info", $questionDetail);
-    }
-    public function ajax()
-    {
-        $this->setLayout("ajax.phtml");
-        $this->set("exa3", "Hello World, ajax");
+        $this->redirect("/admin_question/show?qid=${qid}");
     }
 
-    public function phpinfo()
-    {
+    public function statusChange(){
+        $qid=$_REQUEST['qid'];
+        $disable=$_REQUEST['disable'];
+        $dbh = connectPDO();
+        $qo = new Questions();
+        $qo->updateQuestionStatus($dbh,$qid,$disable);
+        $this->redirect("/admin_question/show?qid=${qid}");
 
     }
+
+
 }
 
 ?>

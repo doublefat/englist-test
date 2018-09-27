@@ -7,6 +7,19 @@
         background-color: #F6F8F9;
     }
 </style>
+
+<script type="text/javascript" >
+    $(document).ready(function() {
+        $('#disable_bt').click(function() {
+            window.location.href = "/admin_question/statusChange?qid=<?= $this->qd["question"]["id"]?>&disable=1";
+        });
+
+        $('#enable_bt').click(function() {
+            window.location.href = "/admin_question/statusChange?qid=<?= $this->qd["question"]["id"] ?>&disable=0";
+        });
+    });
+
+</script>
 <p>
     <a href="/admin_question/index"> Question List</a>
 </p>
@@ -27,7 +40,13 @@
         <input name="associate_id" value="<?= $this->qd["question"]["associate_id"]?>"/>
 
         <br/>
-
+        <label>Status:<?= $this->qd["question"]['status_word'] ?> </label>
+        <? if( $this->qd["question"]["disable"] ==1):?>
+            <button type="button" id="enable_bt">Enable</button>
+        <?else:?>
+            <button type="button" id="disable_bt">Disable</button>
+        <?endif;?>
+        <br/>
         <textarea name="detail" cols="100"><?= $this->qd["question"]["detail"] ?></textarea>
     </div>
 
@@ -59,6 +78,7 @@
     </div>
     <div>
         <button type="submit">Save</button>
+
     </div>
 
 </form>

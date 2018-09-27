@@ -3,6 +3,11 @@
 
     });
 </script>
+<style>
+    .is_right{
+        color: #e31b23;
+    }
+</style>
 
 
 <div>
@@ -10,12 +15,12 @@
     <h3>Create time:<?= $this->info['question']['create_time'] ?> </h3>
     <h3>Update time:<?= $this->info['question']['update_time'] ?> </h3>
     <h3>Level:<?= $this->info['question']['level_word'] ?> </h3>
-
+    <h3>Status:<?= $this->info['question']['status_word'] ?> </h3>
     <h3><?= $this->info['question']['id'] ?> . <?= $this->info['question']['detail'] ?> </h3>
 
     <div>
         <? foreach ($this->info['options'] as $option): ?>
-            <div>
+            <div class="<?= $option['is_right_class'] ?>">
 
                 <h4><?= $option['index'] ?>. <?= $option['content'] ?></h4>
             </div>
