@@ -4,7 +4,7 @@ $currentDir = dirname(__FILE__);
 include_once realpath($currentDir . '/../system') . '/dbfunction.php';
 include_once realpath($currentDir . '/../db') . '/Questions.php';
 
-class AdminQuestionController extends BasicController
+class Admin_questionController extends BasicController
 {
 
     var $optionIndexLetters = array("A", "B", "C", "D", "E", "F", "G", "H", "I");
