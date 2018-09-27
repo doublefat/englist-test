@@ -75,7 +75,7 @@ function insertOneQuestion($dbh, $level, $num, $content, $a, $b, $c, $d)
 
 function import($dbh,$filePath, $level)
 {
-    $qustionReg = "/(.*)______(\d+)\\.\s+(.*)/";
+    $qustionReg = "/(.*)______(\d+)\\.\s*(.*)/";
     $handle = fopen($filePath, "r");
     $start = 0;
     $num = 0;
@@ -114,25 +114,37 @@ function import($dbh,$filePath, $level)
                 preg_match("/A\\.\s+(.*)/", $line, $matches);
                 if (!empty($matches)) {
                     //find A
+                    if(!empty($a)){
+                        echo "Wrong, double a for line ${num}\n";
+                    }
                     $a = $matches[1];
                 } else {
                     preg_match("/B\\.\s+(.*)/", $line, $matches);
                     if (!empty($matches)) {
                         //find B
+                        if(!empty($b)){
+                            echo "Wrong, double b for line ${num}\n";
+                        }
                         $b = $matches[1];
                     } else {
                         preg_match("/C\\.\s+(.*)/", $line, $matches);
                         if (!empty($matches)) {
                             //find C
+                            if(!empty($c)){
+                                echo "Wrong, double c for line ${num}\n";
+                            }
                             $c = $matches[1];
                         } else {
                             preg_match("/D\\.\s+(.*)/", $line, $matches);
                             if (!empty($matches)) {
                                 //find D
+                                if(!empty($d)){
+                                    echo "Wrong, double d for line ${num}\n";
+                                }
                                 $d = $matches[1];
                             } else {
                                 if (!empty(trim($line))) {
-                                    $content = $content . $line;
+                                    $content = $content ."<br/>". $line;
                                 }
 
                             }
@@ -157,7 +169,7 @@ truncateQuetion($dbh,"`testing`.`question_option`");
 truncateQuetion($dbh,"`testing`.`question`");
 
 import($dbh,$currentDir . "/../../db/e_question.txt", 1);
-//import($currentDir . "/../../db/m_question.txt", 2);
-//import($currentDir . "/../../db/d_question.txt", 3);
+import($dbh,$currentDir . "/../../db/m_question.txt", 2);
+import($dbh,$currentDir . "/../../db/d_question.txt", 3);
 
 //test(null);

@@ -1,228 +1,238 @@
 <?php
-function load_one_assoc_from_sql($db,$sql){
-	$result=run_sql($db,$sql);
+function load_one_assoc_from_sql($db, $sql)
+{
+    $result = run_sql($db, $sql);
 
-	if($result->num_rows >0){
-		$row=$result->fetch_assoc();
-		$result->close();
-		return $row;
-	}
-	$result->close();
-	return array();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $result->close();
+        return $row;
+    }
+    $result->close();
+    return array();
 }
 
-function fetch_assoc_arrays_from_sql($db,$sql){
-	$result=run_sql($db,$sql);
-	$re=array();
-	if($result->num_rows >0){
-		while($row=$result->fetch_assoc()){
-			$re[]=$row;
-		}
-	}
-	$result->close();
-	return $re;
+function fetch_assoc_arrays_from_sql($db, $sql)
+{
+    $result = run_sql($db, $sql);
+    $re = array();
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $re[] = $row;
+        }
+    }
+    $result->close();
+    return $re;
 }
 
-function fetch_arrays_from_sql($db,$sql){
-	$result=run_sql($db,$sql);
-	$re=array();
-	if($result->num_rows >0){
-		while($row=$result->fetch_row()){
-			$re[]=$row;
-		}
-	}
-	$result->close();
-	return $re;
+function fetch_arrays_from_sql($db, $sql)
+{
+    $result = run_sql($db, $sql);
+    $re = array();
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_row()) {
+            $re[] = $row;
+        }
+    }
+    $result->close();
+    return $re;
 }
 
 
-function run_sql($db,$sql,$mode=MYSQLI_STORE_RESULT){
-	Log::d($sql);
-	$st=microtime(true);
-	$result=$db->query($sql,$mode);
-	$sp=sprintf('%.3f',(microtime(true)-$st));
-	Log::d("The sql Spend {$sp} seconds");
-	if(!$result){
-		throw new Exception("SQL :[$sql] is wrong, error message from mysql:{$db->error}");
-	}
+function run_sql($db, $sql, $mode = MYSQLI_STORE_RESULT)
+{
+    Log::d($sql);
+    $st = microtime(true);
+    $result = $db->query($sql, $mode);
+    $sp = sprintf('%.3f', (microtime(true) - $st));
+    Log::d("The sql Spend {$sp} seconds");
+    if (!$result) {
+        throw new Exception("SQL :[$sql] is wrong, error message from mysql:{$db->error}");
+    }
 
 
-
-	return $result;
+    return $result;
 }
 
 /*
  * get the information from $_REQUEST and valid if by connect function, if ok, save them into $_SESSION
 */
-function getDbInfoFromUser(){
-	if(empty($_REQUEST['host'])){
-		throw new Exception('host is required');
+function getDbInfoFromUser()
+{
+    if (empty($_REQUEST['host'])) {
+        throw new Exception('host is required');
 
-	}
-	else{
-		$host=$_REQUEST['host'];
-	}
+    } else {
+        $host = $_REQUEST['host'];
+    }
 
-	if(empty($_REQUEST['user'])){
-		throw new Exception('user is required');
+    if (empty($_REQUEST['user'])) {
+        throw new Exception('user is required');
 
-	}
-	else{
-		$user=$_REQUEST['user'];
-	}
-
-
-	if(!empty($_REQUEST['password']) ){
-		$password=$_REQUEST['password'];
-	}
+    } else {
+        $user = $_REQUEST['user'];
+    }
 
 
-	else{
-		$password='';
-	}
+    if (!empty($_REQUEST['password'])) {
+        $password = $_REQUEST['password'];
+    } else {
+        $password = '';
+    }
 
-	if(!empty($_REQUEST['port'])){
-		$port=$_REQUEST['port'];
-	}
-
-	else{
-		$port='3306';
-	}
-
-
-
-	if(!empty($_REQUEST['database'])){
-		$database=$_REQUEST['database'];
-	}
+    if (!empty($_REQUEST['port'])) {
+        $port = $_REQUEST['port'];
+    } else {
+        $port = '3306';
+    }
 
 
-	else{
-		$database='';
-	}
+    if (!empty($_REQUEST['database'])) {
+        $database = $_REQUEST['database'];
+    } else {
+        $database = '';
+    }
 
-	$db= new mysqli($host,$user,$password,'',$port);
+    $db = new mysqli($host, $user, $password, '', $port);
 
-	if($db === null || $db === false || !is_object($db) || $db->connect_errno){
+    if ($db === null || $db === false || !is_object($db) || $db->connect_errno) {
 
-		if(is_object($db) &&  $db->connect_error){
-			throw new Exception("Connect error for {$user}@{$host} ,error message from db:{$db->connect_error}");
-		}
-		else{
-			throw new Exception("Connect error for {$user}@{$host}");
-		}
+        if (is_object($db) && $db->connect_error) {
+            throw new Exception("Connect error for {$user}@{$host} ,error message from db:{$db->connect_error}");
+        } else {
+            throw new Exception("Connect error for {$user}@{$host}");
+        }
 
-	}
-	$db->close();
+    }
+    $db->close();
 
-	$_SESSION['host']=$_REQUEST['host'];
-	$_SESSION['user']=$_REQUEST['user'];
-	$_SESSION['password']=$password;
+    $_SESSION['host'] = $_REQUEST['host'];
+    $_SESSION['user'] = $_REQUEST['user'];
+    $_SESSION['password'] = $password;
 
-	$_SESSION['port']=$port;
-	$_SESSION['database']=$database;
+    $_SESSION['port'] = $port;
+    $_SESSION['database'] = $database;
 }
 
 /*
  * get a mysqli object from $_SESSION
 */
-function getDBFromSession($database=null){
+function getDBFromSession($database = null)
+{
 
-	
-	if( empty($_SESSION['host'])){
-		throw new Exception('host is required');
 
-	}
-	else{
-		$host=$_SESSION['host'];
-	}
+    if (empty($_SESSION['host'])) {
+        throw new Exception('host is required');
 
-	if( empty($_SESSION['user'])){
-		throw new Exception('user is required');
+    } else {
+        $host = $_SESSION['host'];
+    }
 
-	}
-	else{
-		$user=$_SESSION['user'];
-	}
+    if (empty($_SESSION['user'])) {
+        throw new Exception('user is required');
 
-	if(!empty($_SESSION['password']) ){
-		$password=$_SESSION['password'];
-	}
+    } else {
+        $user = $_SESSION['user'];
+    }
 
-	else{
-		$password='';
-	}
+    if (!empty($_SESSION['password'])) {
+        $password = $_SESSION['password'];
+    } else {
+        $password = '';
+    }
 
-	if(!empty($_SESSION['port']) ){
-		$port=$_SESSION['port'];
-	}
-	else{
-		$port='3306';
-	}
+    if (!empty($_SESSION['port'])) {
+        $port = $_SESSION['port'];
+    } else {
+        $port = '3306';
+    }
 
-	if(empty($database)){
-		if(!empty($_SESSION['database']) ){
-			$database=$_SESSION['database'];
-		}
-		else{
-			$database='';
-		}
-	}
-	$db= @mysqli_connect($host,$user,$password,$database,$port);
+    if (empty($database)) {
+        if (!empty($_SESSION['database'])) {
+            $database = $_SESSION['database'];
+        } else {
+            $database = '';
+        }
+    }
+    $db = @mysqli_connect($host, $user, $password, $database, $port);
 
-	if($db === null || $db->connect_errno){
-		throw new Exception("Connect error for {$user}@{$host} ,error message from db:{$db->connect_error}");
-	}
-	return $db;
+    if ($db === null || $db->connect_errno) {
+        throw new Exception("Connect error for {$user}@{$host} ,error message from db:{$db->connect_error}");
+    }
+    return $db;
 }
 
 /*
  * get all database name
 */
 
-function get_all_database($db=null){
-	if($db === null){
-		$db=getDBFromSession();
-		$closeFlag=1;
-	}
+function get_all_database($db = null)
+{
+    if ($db === null) {
+        $db = getDBFromSession();
+        $closeFlag = 1;
+    }
 
-	$_dbs=fetch_arrays_from_sql($db, "show databases");
+    $_dbs = fetch_arrays_from_sql($db, "show databases");
 
-	if(isset($closeFlag)){
-		$db->close();
-	}
-	$dbs=array();
+    if (isset($closeFlag)) {
+        $db->close();
+    }
+    $dbs = array();
 
-	foreach($_dbs as $row){
+    foreach ($_dbs as $row) {
 
-		$dbs[]=array('name'=>$row[0]);
-	}
-	return $dbs;
+        $dbs[] = array('name' => $row[0]);
+    }
+    return $dbs;
 }
 
 /*
  * get all tables name
 */
 
-function get_all_tables($database,$db=null){
-	if($db === null){
-		$db=getDBFromSession($database);
-		$closeFlag=1;
-	}
+function get_all_tables($database, $db = null)
+{
+    if ($db === null) {
+        $db = getDBFromSession($database);
+        $closeFlag = 1;
+    }
 
-	$_dbs=fetch_arrays_from_sql($db, "show tables");
+    $_dbs = fetch_arrays_from_sql($db, "show tables");
 
-	if(isset($closeFlag)){
-		$db->close();
-	}
-	$tables=array();
+    if (isset($closeFlag)) {
+        $db->close();
+    }
+    $tables = array();
 
-	foreach($_dbs as $row){
+    foreach ($_dbs as $row) {
 
-		$tables[]=array('name'=>$row[0]);
-	}
-	return $tables;
+        $tables[] = array('name' => $row[0]);
+    }
+    return $tables;
 }
 
+
+function connectPDO()
+{
+    $engine = __DB_ENGINE__;
+    $host = __DB_HOST__;
+    $port = __DB_PORT__;
+    $user = __DB_USER__;
+    $dbname = __DB_DB__;
+    $password = __DB_PW__;
+
+    $dsn = "{$engine}:host={$host};port={$port};dbname={$dbname}";
+
+
+    $initPDO = array();
+//$dsn.=';charset=UTF8';
+
+//$initPDO[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES utf8";
+
+    $dbh = new PDO($dsn, $user, $password, $initPDO);
+    return $dbh;
+}
 
 
 

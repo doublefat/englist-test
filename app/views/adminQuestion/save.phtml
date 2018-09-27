@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>
+
+
+<div>
+    <a href="/adminQuestion/edit?qn=<?= $this->info['question']['id'] ?>">Edit</a>
+    <h3>Create time:<?= $this->info['question']['create_time'] ?> </h3>
+    <h3>Update time:<?= $this->info['question']['update_time'] ?> </h3>
+    <h3>Level:<?= $this->info['question']['level_word'] ?> </h3>
+
+    <h3><?= $this->info['question']['id'] ?> . <?= $this->info['question']['detail'] ?> </h3>
+
+    <div>
+        <? foreach ($this->info['options'] as $option): ?>
+            <div>
+
+                <h4><?= $option['index'] ?>. <?= $option['content'] ?></h4>
+            </div>
+        <? endforeach; ?>
+    </div>
+
+</div>
+<p>
+    <a href="/adminQuestion/index"> Question List</a>
+</p>
+

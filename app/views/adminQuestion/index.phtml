@@ -1,0 +1,61 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+</script>
+<style>
+    .odd_line {
+        background-color: #D0E6ED;
+    }
+
+    .even_line {
+        background-color: #F6F8F9;
+    }
+    .is_right{
+        color: #e31b23;
+    }
+</style>
+
+<? foreach ($this->data as $one): ?>
+    <div class="<?= $one['css_line'] ?>">
+        <a href="/adminQuestion/edit?qn=<?= $one['id'] ?>">Edit</a>
+        <h3>Create time:<?= $one['create_time'] ?> </h3>
+        <h3>Update time:<?= $one['update_time'] ?> </h3>
+        <h3>Level:<?= $one['level_word'] ?> </h3>
+
+        <h3><?= $one['id'] ?> . <?= $one['detail'] ?> </h3>
+
+        <div>
+            <? foreach ($one['options'] as $option): ?>
+                <div class="<?= $option['is_right_class'] ?>">
+
+                    <h4><?= $option['index'] ?>. <?= $option['content'] ?></h4>
+                </div>
+            <? endforeach; ?>
+        </div>
+
+    </div>
+<? endforeach; ?>
+
+<hr/>
+
+<div>
+    <span>Total:</span> <span><?= $this->pageInfo['total']?></span> <span>Questions in </span>
+    <span><?= $this->pageInfo['total_pages']?></span> <span>pages</span>
+    <? if ($this->pageInfo['show_pages']['is_first']== 0): ?>
+    <a href="/adminQuestion/index?pn=1">&lt;&lt;</a><span>&nbsp;</span><a href="/adminQuestion/index?pn=<?= $this->pageInfo['show_pages']['pre_page']?>">&lt;</a><span>&nbsp;</span>
+    <? endif;?>
+    <? foreach ($this->pageInfo['show_pages']['pages'] as $one): ?>
+        <? if ($one['is_current'] == 1): ?>
+            <span><?= $one['pn']?> </span>
+        <? else: ?>
+            <a href="/adminQuestion/index?pn=<?= $one['pn']?>?>"><?= $one['pn']?></a>
+        <? endif; ?>
+        <span>&nbsp;</span>
+    <? endforeach; ?>
+    <? if ($this->pageInfo['show_pages']['is_last']== 0): ?>
+        <a href="/adminQuestion/index?pn=<?= $this->pageInfo['show_pages']['next_page']?>">&gt;</a><span>&nbsp;</span><a href="/adminQuestion/index?pn=<?= $this->pageInfo['total_pages']?>">&gt;&gt;</a><span>&nbsp;</span>
+    <? endif;?>
+</div>
+
+<!-- comment exmaple -->

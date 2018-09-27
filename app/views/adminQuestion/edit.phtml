@@ -1,0 +1,64 @@
+<style>
+    .odd_line {
+        background-color: #D0E6ED;
+    }
+
+    .even_line {
+        background-color: #F6F8F9;
+    }
+</style>
+<p>
+    <a href="/adminQuestion/index"> Question List</a>
+</p>
+<form action="/adminQuestion/save" method="post">
+
+    <input type="hidden" name="id" value="<?= $this->qd["question"]["id"] ?>"/>
+    <input type="hidden" name="type" value="<?= $this->qd["question"]["type"] ?>"/>
+    <div>
+        <label>Question <?= $this->qd["question"]["id"] ?>, </label>
+        <label>Level:</label>
+        <select name="level">
+            <? foreach ($this->levelWords as $lId=>$lWord):?>
+                <option  value="<?= $lId?>" <? if($lId===intval($this->qd["question"]["level"])){echo 'selected="selected"';} ?> ><?= $lWord?></option>
+            <? endforeach;?>
+
+        </select>
+        <label>associate_id</label>
+        <input name="associate_id" value="<?= $this->qd["question"]["associate_id"]?>"/>
+
+        <br/>
+
+        <textarea name="detail" cols="100"><?= $this->qd["question"]["detail"] ?></textarea>
+    </div>
+
+    <div>
+        <? foreach ($this->qd["options"] as $one): ?>
+        <div>
+            <label><?= $one["index"]?></label>
+            <br/>
+            <textarea name="option_id_<?= $one["id"]?>" cols="80"><?= $one["content"] ?></textarea>
+            <label>Is right:</label>
+            <input type="checkbox" value="1" name="is_right_<?= $one["id"]?>" <? if($one["is_right"]==1){echo 'checked="checked"';} ?>  />
+        </div>
+        <? endforeach; ?>
+        <div>
+            <label>New option (Leave it empty if you do not need it)</label>
+            <br/>
+            <textarea name="option_new_1" cols="80"></textarea>
+            <label>Is right:</label>
+            <input type="checkbox" value="1" name="new_is_right_1" />
+        </div>
+        <div>
+            <label>New option (Leave it empty if you do not need it)</label>
+            <br/>
+
+            <textarea name="option_new_2" cols="80"></textarea>
+            <label>Is right:</label>
+            <input type="checkbox" value="1" name="new_is_right_2" />
+        </div>
+    </div>
+    <div>
+        <button type="submit">Save</button>
+    </div>
+
+</form>
