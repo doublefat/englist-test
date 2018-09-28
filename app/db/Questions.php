@@ -452,7 +452,7 @@ class Questions
 
         $setClumns .=',`extra`=';$setClumns .=':extra';
 
-        $setClumns .=',`update_time`=';$setClumns .='now';
+        $setClumns .=',`update_time`=';$setClumns .='now()';
 
         $runQuery.=$setClumns;$runQuery.=" WHERE " .'`id` = :qid';
 
