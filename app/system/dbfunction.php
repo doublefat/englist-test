@@ -222,7 +222,7 @@ function connectPDO()
     $dbname = __DB_DB__;
     $password = __DB_PW__;
 
-    $dsn = "{$engine}:host={$host};port={$port};dbname={$dbname}";
+    $dsn = "{$engine}:host={$host};port={$port};dbname={$dbname};charset=utf8";
 
 
     $initPDO = array();
