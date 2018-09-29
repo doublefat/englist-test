@@ -38,32 +38,8 @@ class Admin_questionController extends BasicController
 
         $questionInfo = $qo->listQuestions($dbh, $pn, $pageSize);
 
-        $qids = array();
-        $data = array();
-        $i = 0;
-        foreach ($questionInfo["data"] as $one) {
-            $id = $one['id'];
-            $qids[] = $id;
-            $one['options'] = array();
+        $data=$qo->loadFullQuestionsWithOptions($dbh,$questionInfo['data']);
 
-
-            if ($i % 2 == 0) {
-                $one["css_line"] = "odd_line";
-            } else {
-                $one["css_line"] = "even_line";
-            }
-            $i++;
-
-            $data[$id]['question'] = $one;
-        }
-
-        $options = $qo->loadOptionsByQuestionIds($dbh, $qids);
-
-        foreach ($options as $one) {
-
-
-            $data[$one['question_id']]['options'][] = $one;
-        }
 
         foreach ($data as $id=>&$qua) {
             $this->prepareQuestion($qua);

@@ -661,9 +661,131 @@ class Questions
     }
 
 
-    public function statusChange(){
 
+    public function getByLevelWithoutUsedIds($dbh, $size,$level, $usedIds){
+
+
+        $runQuery="no query yet";
+        try {
+            $selectColumns =" SELECT ";
+            $selectColumns .="`id` `id`";
+            $selectColumns .=", `type` `type`";
+            $selectColumns .=", `disable` `disable`";
+            $selectColumns .=", `associate_id` `associate_id`";
+            $selectColumns .=", `level` `level`";
+            $selectColumns .=", `detail` `detail`";
+            $selectColumns .=", `extra` `extra`";
+            $selectColumns .=", `create_time` `create_time`";
+            $selectColumns .=", `update_time` `update_time`";
+            $queryBase=" FROM ";
+            $queryBase.="{$this->TESTING_QUESTION}";
+            $queryBase.=" WHERE " .'(`level` = :level) AND (`id` NOT IN ( :usedIds))';
+
+            $order_clause=" order by rand() ";
+
+            $limit_clause=" LIMIT 0 ,${size}";
+
+            $runQuery=$selectColumns . $queryBase . $order_clause . $limit_clause;
+
+            //echo $runQuery."\n";
+
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':level',$level,PDO::PARAM_INT);
+            $stmt->bindParam(':usedIds',$usedIds,PDO::PARAM_INT);
+            $stmt_rv = $stmt->execute();
+
+            if ($stmt_rv) {
+                return $stmt->fetchAll();
+            }
+            else {
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
+
+                return false;
+            }
+        }
+        catch ( PDOException $x ) {
+            MLog::e('db error info:' . $x->getMessage()." query:".$runQuery);
+
+            throw $x;
+        }
     }
+
+
+    public function countByLevel($dbh, $level){
+
+
+        $runQuery="no query yet";
+        try {
+            $selectColumns =" SELECT ";
+            $selectColumns .="count(*) total";
+            $queryBase=" FROM ";
+            $queryBase.="{$this->TESTING_QUESTION}";
+            $queryBase.=" WHERE " .'`level` = :level';
+            $order_clause="";
+            $limit_clause="";
+            $runQuery=$selectColumns . $queryBase . $order_clause . $limit_clause;
+
+            //echo $runQuery."\n";
+
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':level',$level,PDO::PARAM_INT);
+            $stmt_rv = $stmt->execute();
+
+            if ($stmt_rv) {
+                $re=$stmt->fetchAll();
+                if(isset($re[0])){
+                    return intval($re[0]["total"]);
+                }
+                else {
+                    return -1;
+                }
+            }
+            else {
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true)." query:".$runQuery);
+
+                return -1;
+            }
+        }
+        catch ( PDOException $x ) {
+            MLog::e('db error info:' . $x->getMessage()." query:".$runQuery);
+
+            throw $x;
+        }
+    }
+
+    public function loadFullQuestionsWithOptions($dbh, $questions)
+    {
+        $qids = array();
+        $data = array();
+        $i = 0;
+        foreach ($questions as $one) {
+            $id = $one['id'];
+            $qids[] = $id;
+            $one['options'] = array();
+
+            if ($i % 2 == 0) {
+                $one["css_line"] = "odd_line";
+            } else {
+                $one["css_line"] = "even_line";
+            }
+            $i++;
+
+            $data[$id]['question'] = $one;
+        }
+
+        $options = $this->loadOptionsByQuestionIds($dbh, $qids);
+
+        foreach ($options as $one) {
+
+
+            $data[$one['question_id']]['options'][] = $one;
+        }
+        return $data;
+    }
+
+
 }
 
 ?>
