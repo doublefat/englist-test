@@ -53,6 +53,15 @@ class Admin_questionController extends BasicController
         // dumpHtmlReadable($data);
         //dumpHtmlReadable($pageInfo);
 
+        if(isset($_SESSION['counter'])){
+            $_SESSION['counter']+=1;
+        }
+        else{
+            $_SESSION['counter']=1;
+        }
+
+        $this->set('counter',$_SESSION['counter']);
+
 
     }
 

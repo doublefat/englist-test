@@ -16,6 +16,9 @@
     }
 </style>
 
+<div>
+    Page counter:<?=$this->counter?>
+</div>
 <? foreach ($this->data as $que): $one=$que['question']?>
 
     <div class="<?= $one['css_line'] ?>">
@@ -59,5 +62,6 @@
         <a href="/admin_question/index?pn=<?= $this->pageInfo['show_pages']['next_page']?>">&gt;</a><span>&nbsp;</span><a href="/admin_question/index?pn=<?= $this->pageInfo['total_pages']?>">&gt;&gt;</a><span>&nbsp;</span>
     <? endif;?>
 </div>
+
 
 <!-- comment exmaple -->
