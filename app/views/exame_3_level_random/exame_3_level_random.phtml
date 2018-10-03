@@ -1,0 +1,17 @@
+<script type="text/javascript" >
+    $(document).ready ( function () {
+
+    } );
+</script>
+
+<!-- this is value from controller -->
+
+
+<p>
+    Comment--- Show all questions
+</p>
+<? foreach ($this->all_questions as $oneQuestion): ?>
+    <h3><?= $oneQuestion['id'] ?></h3>
+<? endforeach; ?>
+
+<!-- comment exmaple -->

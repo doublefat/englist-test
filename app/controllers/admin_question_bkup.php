@@ -35,35 +35,47 @@ class Admin_questionController extends BasicController
         }
 
         $qo = new Questions();
-        $questionInfo = $qo->listQuestions($dbh, $pn, $pageSize);
-//	dumpHtmlReadable($questionInfo);
 
-        $data=$qo->loadFullQuestionsWithOptions($dbh,$questionInfo['data']);
-//	dumpHtmlReadable($data);
+        $questionInfo = $qo->listQuestions($dbh, $pn, $pageSize);
+
+        $qids = array();
+        $data = array();
+        $i = 0;
+        foreach ($questionInfo["data"] as $one) {
+            $id = $one['id'];
+            $qids[] = $id;
+            $one['options'] = array();
+
+
+            if ($i % 2 == 0) {
+                $one["css_line"] = "odd_line";
+            } else {
+                $one["css_line"] = "even_line";
+            }
+            $i++;
+
+            $data[$id]['question'] = $one;
+        }
+
+        $options = $qo->loadOptionsByQuestionIds($dbh, $qids);
+
+        foreach ($options as $one) {
+
+
+            $data[$one['question_id']]['options'][] = $one;
+        }
 
         foreach ($data as $id=>&$qua) {
             $this->prepareQuestion($qua);
         }
-//	dumpHtmlReadable($data);
-	echo "<hr/>";
 
         $pageInfo = $questionInfo["page_info"];
         $pageInfo['show_pages'] = calculatePageInfomation($pageInfo['total_pages'], $pageInfo['page_size'], $pageInfo['page_no'], 10);
-//	$this->set("sth", $sth);   // set the sth variable of view with $sth
         $this->set("pageInfo", $pageInfo);
 
         $this->set("data", $data);
         // dumpHtmlReadable($data);
         //dumpHtmlReadable($pageInfo);
-
-        if(isset($_SESSION['counter'])){
-            $_SESSION['counter']+=1;
-        }
-        else{
-            $_SESSION['counter']=1;
-        }
-
-        $this->set('counter',$_SESSION['counter']);
 
 
     }
@@ -96,7 +108,7 @@ class Admin_questionController extends BasicController
             if(!empty($questionDetail)){
                 $this->prepareQuestion($questionDetail);
             }
-            //dumpHtmlReadable($questionDetail);
+            dumpHtmlReadable($questionDetail);
             $this->set("qd", $questionDetail);
             $this->set("levelWords", $this->levelWords);
         }

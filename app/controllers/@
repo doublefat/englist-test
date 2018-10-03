@@ -35,21 +35,18 @@ class Admin_questionController extends BasicController
         }
 
         $qo = new Questions();
+
         $questionInfo = $qo->listQuestions($dbh, $pn, $pageSize);
-//	dumpHtmlReadable($questionInfo);
 
         $data=$qo->loadFullQuestionsWithOptions($dbh,$questionInfo['data']);
-//	dumpHtmlReadable($data);
+
 
         foreach ($data as $id=>&$qua) {
             $this->prepareQuestion($qua);
         }
-//	dumpHtmlReadable($data);
-	echo "<hr/>";
 
         $pageInfo = $questionInfo["page_info"];
         $pageInfo['show_pages'] = calculatePageInfomation($pageInfo['total_pages'], $pageInfo['page_size'], $pageInfo['page_no'], 10);
-//	$this->set("sth", $sth);   // set the sth variable of view with $sth
         $this->set("pageInfo", $pageInfo);
 
         $this->set("data", $data);
