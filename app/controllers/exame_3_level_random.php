@@ -101,16 +101,18 @@ class exame_3_level_randomController extends BasicController
     }    
 
     public function submit (){
-        dumpHtmlReadable($_POST);
+
         
        
-        
+        $question=array();
         foreach ($_POST as $key=>$value){
              if(strpos($key,"question_")===0 && is_array($value) && !empty($value)){
                  // this is one question answer!!!
                  echo "find a question:${key} <br/>";
+                 $question[]=array("id"=>substr($key,9),'user_answer'=>$value);
              }
         }
+        dumpHtmlReadable($question);
         
         //$this->redirect("/exame_3_level_random/finish_exame");
     }

@@ -1,0 +1,138 @@
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            prepareLoginDialog();
+
+        });
+
+        function prepareLoginDialog() {
+            $('#forget_password').click(function () {
+
+                if ($('#login_name').val() === '') {
+                    var title = $('#login_name').attr('title');
+                    var name = $('#login_name').attr('name');
+                    var errorMessage = "";
+                    if (errorMessage !== null) {
+                        errorMessage += ", ";
+                    }
+                    else {
+                        errorMessage = "";
+                    }
+                    errorMessage += title + "Can not be empty";
+                    $('#' + name + "_line").addClass('error_line');
+                }
+                else {
+                    window.location = "/email/reset_password_required?name=" + encodeURIComponent($('#login_name').val());
+                }
+                return false;
+            });
+            $("#login_bt").click(function () {
+                cleanErrorMessage();
+                if (!emptyValid('login_form', 'login_error_message')) {
+                    return;
+                }
+                var url = "/login/login"
+                $.post(url, $('#login_form').serialize()).done(function (jsonStr) {
+                    try {
+                        var re = JSON.parse(jsonStr);
+
+                        if (re.error_code === 0) {
+                            window.location = "<?= $this->popUrl('') ?>" + "home";
+                            $('#login_dialog').dialog("close");
+                        }
+                        else if (typeof re.error_message !== 'undefined') {
+                            $('#login_error_message').text(re.error_message);
+                        }
+                        else {
+                            $('#login_error_message').text(jsonStr);
+                        }
+                    } catch (e) {
+                        $('#login_error_message').text(jsonStr);
+                    }
+
+                });
+
+            });
+
+
+        }
+
+
+        function cleanErrorMessage() {
+            $('.error_message').text('');
+            $('.error_line').removeClass('error_line');
+        }
+
+        function emptyValid(formId, errormessageId) {
+            var errorMessage = null;
+            $('#' + formId + " .notempty").each(function () {
+                if ($(this).val() === "") {
+                    var title = $(this).attr('title');
+                    var name = $(this).attr('name');
+                    if (errorMessage !== null) {
+                        errorMessage += ", ";
+                    }
+                    else {
+                        errorMessage = "";
+                    }
+                    errorMessage += title + "Can not be empty";
+                    $('#' + name + "_line").addClass('error_line');
+                }
+            });
+            if (errorMessage !== null) {
+                $('#' + errormessageId).text(errorMessage);
+                return false;
+            }
+
+            return true;
+
+        }
+    </script>
+
+
+    <style>
+        body {
+            background-image: url('/images/index_back.jpg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100%;
+        }
+
+
+
+        .error_message {
+            color: red;
+        }
+
+        .error_line {
+            background-color: red
+        }
+    </style>
+
+
+
+
+
+<div id="login_dialog">
+    <p class="error_message" id="login_error_message"></p>
+    <form id="login_form">
+        <table>
+            <tr id="login_name_line">
+                <td>email:</td>
+                <td><input type="text" id='login_name' name="login_name" class="notempty" title="email"></td>
+            </tr>
+            <tr id="login_password_line">
+                <td>Password:</td>
+                <td><input type="password" name="login_password" class="notempty" title="password"></td>
+            </tr>
+        </table>
+        <input  type="button" id="login_bt" value="login"/>
+        <input type="reset" value="reset"/>
+    </form>
+
+    <div style="float: bottom">
+        <a id='forget_password' href="#">Forget password ?</a>
+    </div>
+</div>
