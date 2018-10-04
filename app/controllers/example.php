@@ -36,6 +36,46 @@ class ExampleController extends BasicController
     {
 
     }
+
+    public function combine_array(){
+        $a1=array("a","b","c");
+        $a2=array("e","f","g");
+
+        $newArray=array();
+
+        foreach ($a1 as $one){
+            $newArray[]=$one;
+        }
+        foreach ($a2 as $one){
+            $newArray[]=$one;
+        }
+
+
+        dumpHtmlReadable($newArray);
+
+
+        $newArray=array();
+
+        for($i=0;$i <count($a1);$i++){
+            $newArray[$a1[$i]]=$a2[$i];
+        }
+        dumpHtmlReadable($newArray);
+
+
+        foreach ($newArray as $key=> $item) {
+            $item="abbcd";
+        }
+        dumpHtmlReadable($newArray);
+
+        foreach ($newArray as $key=> &$item) {
+            $item="abbcd";
+        }
+        dumpHtmlReadable($newArray);
+
+
+
+        $this->view->setTemplate("test/blank.phtml");
+    }
 }
 
 ?>

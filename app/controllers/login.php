@@ -22,10 +22,10 @@ class LoginController extends HtmlController {
         try {
 
             if (empty($_POST['login_name'])) {
-                throw new Exception("用户名,或者email 是空的", IndexController::EXCEPTION_CODE_USER_ERROR);
+                throw new Exception("email is empty", IndexController::EXCEPTION_CODE_USER_ERROR);
             }
             if (empty($_POST['login_password'])) {
-                throw new Exception("密码是空的", IndexController::EXCEPTION_CODE_USER_ERROR);
+                throw new Exception("password is emtpy", IndexController::EXCEPTION_CODE_USER_ERROR);
             }
 
            
