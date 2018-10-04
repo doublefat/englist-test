@@ -56,17 +56,20 @@ class ExampleController extends BasicController
 
         $newArray=array();
 
+        //using index to visit the element in array
         for($i=0;$i <count($a1);$i++){
             $newArray[$a1[$i]]=$a2[$i];
         }
         dumpHtmlReadable($newArray);
 
 
+        //demo php copy in using .
         foreach ($newArray as $key=> $item) {
             $item="abbcd";
         }
         dumpHtmlReadable($newArray);
 
+        //demo reference
         foreach ($newArray as $key=> &$item) {
             $item="abbcd";
         }
