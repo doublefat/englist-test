@@ -100,7 +100,7 @@ class exame_one_by_oneController extends BasicController
 
     public function finish()
     {
-        var_dump($_SESSION["student"]["answers"]);
+        dumpHtmlReadable($_SESSION["student"]["answers"]);
 
 
     }
