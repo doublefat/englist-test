@@ -29,6 +29,10 @@ class Teacher_mngController extends HtmlController {
 
     }
 
+    public function create(){
+
+    }
+
 
 
 }
