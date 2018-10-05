@@ -1,0 +1,38 @@
+1. one page per question
+2. no, backfowd
+3. time count 30 min
+4. current quest/total
+
+final page :
+5. as time up, or complete => tell teh class level : ESL, Tofel basic, Tofel intermidian + score
+
+
+-   question system : 
+		
+	easy	level : first questions 10 or up, 70% -> level up   score 30
+	basic	level : first questions 10 or up  60% -> level up   score 50   
+	inter	level : 
+
+
+
+		level questions 70 % correct, level up
+		level question continuously 3 wrong, , level down
+	
+
+--  score system  question 10/10/10, all level score 2 per question
+
+    class system : ESL (score ) : less than ? 50
+		 : Toefl Basic ( score ) : [ 50 : 69 ]
+		 : Teefl inter ( score ) : above 70
+
+
+
+test ftp : test dummy.... 
+!!!!  server : no ssh server?, test ssh works?  if not, email everyone (DR. Hwang) to install, hopefully....
+
+
+
+
+10/ 7/2018	Sunday server online test, provides url for test.
+
+10/11/2018	MUST:	Super ranger demo.
