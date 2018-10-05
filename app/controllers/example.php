@@ -79,6 +79,13 @@ class ExampleController extends BasicController
 
         $this->view->setTemplate("test/blank.phtml");
     }
+    public function session_demo(){
+        if(empty($_SESSION["abcd_counter"])){
+            $_SESSION["abcd_counter"]=0;
+        }
+        $_SESSION["abcd_counter"]++;
+        $this->set("session_value",$_SESSION["abcd_counter"]);
+    }
 }
 
 ?>
