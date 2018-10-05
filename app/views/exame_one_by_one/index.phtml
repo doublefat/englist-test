@@ -1,29 +1,46 @@
 <script type="text/javascript" >
-    $(document).ready ( function () {
+    $(document).ready(function() {
+        $('#question_area').load('<?=$this->popUrl("exame_one_by_one/one_question")?>');
+        $("#sub_bt").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "<?=$this->popUrl("exame_one_by_one/submit")?>",
+                data: $("#question_form").serialize(), // serializes the form's elements.
+                success: function(data)
+                {
+                    if(data==="next"){
+                        $('#question_area').load('<?=$this->popUrl("exame_one_by_one/one_question")?>');
+                    }
+                    else if(data=="finish"){
+                        window.location.href = "<?=$this->popUrl("exame_one_by_one/finish")?>";
+                    }
+                    else{
+                        alert("Unknow command:"+data); // show response from the php script.
+                    }
 
-    } );
+                }
+            });
+
+        });
+    });
 </script>
+
 <style>
+    #parent:{
+        padding-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 10px;
+
+    }
 </style>
 
-<div>
+<div id="parent" >
+
+    <div id="question_area">
+
+    </div>
+    <div>
+        <button id="sub_bt">Submit</button>
+    </div>
 </div>
-
-<!-- this is value from controller -->
-
-<p>
-    Comment--- Show all questions
-</p>
-
-<form action="/exame_3_level_random/submit" method="post">
-<? foreach ($this->data as $que): $one = $que['question'] ?>
-<input type="hidden" name="all_questions[]" value="<?= $one['id']?>"/>
-    <h3><?= $one['q_cnt'] ?>. <?= $one['detail'] ?> </h3>
-    <? foreach ($que['options'] as $option): ?>
-	<h4><input type = "checkbox" name = "question_<?= $one['id']?>[]" value = "<?=$option['id']?>" /> <?= $option['index'] ?>. <?= $option['content'] ?></h4>
-    <? endforeach; ?>
-    <hr/>
-<? endforeach; ?>
-<input type="submit" value="Submit"/>
-</form>
-<!-- comment exmaple -->
