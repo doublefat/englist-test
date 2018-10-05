@@ -17,6 +17,7 @@
 
 <form action="/exame_3_level_random/submit" method="post">
 <? foreach ($this->data as $que): $one = $que['question'] ?>
+<input type="hidden" name="all_questions[]" value="<?= $one['id']?>"/>
     <h3><?= $one['q_cnt'] ?>. <?= $one['detail'] ?> </h3>
     <? foreach ($que['options'] as $option): ?>
 	<h4><input type = "checkbox" name = "question_<?= $one['id']?>[]" value = "<?=$option['id']?>" /> <?= $option['index'] ?>. <?= $option['content'] ?></h4>
