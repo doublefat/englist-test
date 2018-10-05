@@ -100,6 +100,7 @@ class exame_one_by_oneController extends BasicController
 
     public function finish()
     {
+        var_dump($_SESSION["student"]["answers"]);
 
 
     }
@@ -109,6 +110,12 @@ class exame_one_by_oneController extends BasicController
 
         MLog::iExport($_POST);
         MLog::i("Question id:" . $_POST['question_id']);
+
+        if(empty($_SESSION["student"]["answers"])){
+            $_SESSION["student"]["answers"]=array();
+        }
+
+        $_SESSION["student"]["answers"][$_POST['question_id']]=array("demo"=>$_POST);
 
         if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion) {
             echo "next";
