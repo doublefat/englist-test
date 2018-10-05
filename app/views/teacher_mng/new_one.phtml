@@ -1,16 +1,34 @@
 <style>
-
+    .error_message: {
+        background-color: #b81900;
+    }
 </style>
 <script type="text/javascript">
 
 </script>
 
-
+<div class="error_message">
+    <? foreach ($this->errorMessage as $one): ?>
+        <div ><?= $one;?></div>
+    <? endforeach; ?>
+</div>
 <div>
     <form action="/teacher_mng/create" method="post">
-        <div><label>Email</label><input type="text" name="email"/></div>
-        <div><label>First Name</label><input type="text" name="first_name"/></div>
-        <div><label>Last Name</label><input type="text" name="last_name"/></div>
+        <div>
+
+
+            <select name="type">
+                <? foreach ($this->admin_types as $value => $name): ?>
+                    <option value='<?= $value?>'
+                            <? if (isset($value) && intval($value) === $this->type): ?>selected="selected"<? endif; ?>><?= $name; ?></option>
+                <? endforeach; ?>
+            </select>
+
+
+        </div>
+        <div><label>Email</label><input type="text" name="email" value="<?= $this->email ?>"/></div>
+        <div><label>First Name</label><input type="text" name="first_name" value="<?= $this->first ?>"/></div>
+        <div><label>Last Name</label><input type="text" name="last_name" value="<?= $this->last ?>"/></div>
         <div><label>password</label><input type="password" name="password1"/></div>
         <div><label>password again</label><input type="password" name="password2"/></div>
         <div>

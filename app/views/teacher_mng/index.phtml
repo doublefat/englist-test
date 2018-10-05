@@ -1,12 +1,35 @@
 <style>
 
+    .odd_line {
+        background-color: #D0E6ED;
+    }
+
+    .even_line {
+        background-color: #F6F8F9;
+    }
 </style>
 <script type="text/javascript" >
 
 </script>
 
+<? foreach ($this->list as $one):?>
+<div class="<?= $one['css_line'] ?>">
+    <div><a href="/teacher_mng/edit?tid=<?= $one['id']?>">Edit</a></div>
+    <div><a href="/teacher_mng/reset_password?tid=<?= $one['id']?>">Reset Pass word</a></div>
+    <div>first name:<?= $one['first_name']?></div>
+    <div>last name:<?= $one['last_name']?></div>
+    <div>login email:<?= $one['email']?></div>
+    <div>Create on:<?= $one['create_time']?></div>
+    <div>last update on:<?= $one['update_time']?></div>
+    <div>role:<?= $this->admin_types[intval($one['amdin_type'])]?></div>
 
-
+</div>
+<br>
+<hr/>
+<?endforeach;?>
+<div>
+    <a href="/teacher_mng/new_one">Create New Teacher</a>
+</div>
 <div>
 
 </div>

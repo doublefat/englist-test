@@ -8,7 +8,7 @@ class Teacher
     protected $TESTING_TEACHERS = "`testing`.`teachers`";
 
 
-    public function listAll ($dbh)
+    public function listAll($dbh)
     {
 
 
@@ -194,68 +194,6 @@ class Teacher
 
     }
 
-    public function updateInfo($dbh, $id, $amdin_type, $first_name, $last_name, $teacher_id, $update_time, $email, $extra)
-    {
-
-        $runQuery = "UPDATE  ";
-
-
-        $runQuery .= "{$this->TESTING_TEACHERS}";
-
-
-        $setClumns = " SET ";
-        $setClumns .= ' `amdin_type`=';
-        $setClumns .= ':amdin_type';
-
-        $setClumns .= ',`first_name`=';
-        $setClumns .= ':first_name';
-
-        $setClumns .= ',`last_name`=';
-        $setClumns .= ':last_name';
-
-        $setClumns .= ',`teacher_id`=';
-        $setClumns .= ':teacher_id';
-
-        $setClumns .= ',`update_time`=';
-        $setClumns .= ':update_time';
-
-        $setClumns .= ',`email`=';
-        $setClumns .= ':email';
-
-        $setClumns .= ',`extra`=';
-        $setClumns .= ':extra';
-
-        $runQuery .= $setClumns;
-        $runQuery .= " WHERE " . '`id` = :id';
-
-        try {
-            $stmt = $dbh->prepare($runQuery);
-
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':amdin_type', $amdin_type, PDO::PARAM_INT);
-            $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
-            $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
-            $stmt->bindParam(':teacher_id', $teacher_id, PDO::PARAM_STR);
-            $stmt->bindParam(':update_time', $update_time, PDO::PARAM_STR);
-            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $stmt->bindParam(':extra', $extra, PDO::PARAM_STR);
-            $stmt_r = $stmt->execute();
-            if ($stmt_r) {
-                return $stmt->rowCount();
-            } else {
-
-                MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
-                return false;
-            }
-
-
-        } catch (PDOException $x) {
-            MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
-
-            throw $x;
-        }
-
-    }
 
     public function create($dbh, $amdin_type, $first_name, $last_name, $teacher_id, $email, $password, $extra)
     {
@@ -335,6 +273,164 @@ class Teacher
 
         } catch (PDOException $x) {
             MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
+            throw $x;
+        }
+
+    }
+
+
+    public function load($dbh, $id)
+    {
+
+
+        $runQuery = "no query yet";
+        try {
+            $selectColumns = " SELECT ";
+            $selectColumns .= "`id` `id`";
+            $selectColumns .= ", `amdin_type` `amdin_type`";
+            $selectColumns .= ", `first_name` `first_name`";
+            $selectColumns .= ", `last_name` `last_name`";
+            $selectColumns .= ", `teacher_id` `teacher_id`";
+            $selectColumns .= ", `create_time` `create_time`";
+            $selectColumns .= ", `update_time` `update_time`";
+            $selectColumns .= ", `email` `email`";
+            $selectColumns .= ", `password` `password`";
+            $selectColumns .= ", `extra` `extra`";
+            $queryBase = " FROM ";
+            $queryBase .= "{$this->TESTING_TEACHERS}";
+            $queryBase .= " WHERE " . '`id` = :id';
+
+
+            $order_clause = "";
+
+
+            $limit_clause = "";
+
+
+            $runQuery = $selectColumns . $queryBase . $order_clause . $limit_clause;
+
+            //echo $runQuery."\n";
+
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt_rv = $stmt->execute();
+
+            if ($stmt_rv) {
+                $re = $stmt->fetchAll();
+                if (isset($re[0])) {
+                    return $re[0];
+                } else {
+                    return null;
+                }
+            } else {
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
+
+                return false;
+            }
+        } catch (PDOException $x) {
+            MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
+
+            throw $x;
+        }
+    }
+
+
+    public function update($dbh, $id, $amdin_type, $first_name, $last_name, $teacher_id, $extra)
+    {
+
+        $runQuery = "UPDATE  ";
+
+
+        $runQuery .= "{$this->TESTING_TEACHERS}";
+
+
+        $setClumns = " SET ";
+        $setClumns .= ' `amdin_type`=';
+        $setClumns .= ':amdin_type';
+
+        $setClumns .= ',`first_name`=';
+        $setClumns .= ':first_name';
+
+        $setClumns .= ',`last_name`=';
+        $setClumns .= ':last_name';
+
+        $setClumns .= ',`teacher_id`=';
+        $setClumns .= ':teacher_id';
+
+        $setClumns .= ',`update_time`=';
+        $setClumns .= 'now()';
+
+        $setClumns .= ',`extra`=';
+        $setClumns .= ':extra';
+
+        $runQuery .= $setClumns;
+        $runQuery .= " WHERE " . '`id` = :id';
+
+        try {
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':amdin_type', $amdin_type, PDO::PARAM_INT);
+            $stmt->bindParam(':first_name', $first_name, PDO::PARAM_STR);
+            $stmt->bindParam(':last_name', $last_name, PDO::PARAM_STR);
+            $stmt->bindParam(':teacher_id', $teacher_id, PDO::PARAM_STR);
+            $stmt->bindParam(':extra', $extra, PDO::PARAM_STR);
+            $stmt_r = $stmt->execute();
+            if ($stmt_r) {
+                return $stmt->rowCount();
+            } else {
+
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
+                return false;
+            }
+
+        } catch (PDOException $x) {
+            MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
+
+            throw $x;
+        }
+
+    }
+
+
+    public function updatePassword($dbh, $id, $password)
+    {
+
+        $runQuery = "UPDATE  ";
+
+
+        $runQuery .= "{$this->TESTING_TEACHERS}";
+
+
+        $setClumns = " SET ";
+        $setClumns .= ' `update_time`=';
+        $setClumns .= 'now()';
+
+        $setClumns .= ',`password`=';
+        $setClumns .= ':password';
+
+        $runQuery .= $setClumns;
+        $runQuery .= " WHERE " . '`id` = :id';
+
+        try {
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':password', $password, PDO::PARAM_STR);
+            $stmt_r = $stmt->execute();
+            if ($stmt_r) {
+                return $stmt->rowCount();
+            } else {
+
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
+                return false;
+            }
+
+
+        } catch (PDOException $x) {
+            MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
+
             throw $x;
         }
 
