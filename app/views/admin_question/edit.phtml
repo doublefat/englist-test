@@ -55,6 +55,7 @@
         <div>
             <label><?= $one["index"]?></label>
             <br/>
+            <br/>
             <textarea name="option_id_<?= $one["id"]?>" cols="80"><?= $one["content"] ?></textarea>
             <label>Is right:</label>
             <input type="checkbox" value="1" name="is_right_<?= $one["id"]?>" <? if($one["is_right"]==1){echo 'checked="checked"';} ?>  />

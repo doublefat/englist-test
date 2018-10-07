@@ -19,7 +19,7 @@ class Admin_questionController extends BasicController
         $this->view->addInternalJs("jquery-ui-1.8.17.custom.min.js");
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
-
+        $this->set("levelWords", $this->levelWords);
     }
 
     public function index()
@@ -98,7 +98,7 @@ class Admin_questionController extends BasicController
             }
             //dumpHtmlReadable($questionDetail);
             $this->set("qd", $questionDetail);
-            $this->set("levelWords", $this->levelWords);
+
         }
     }
 
@@ -169,6 +169,69 @@ class Admin_questionController extends BasicController
     }
 
 
+
+    public function new_one(){
+
+        $this->set("optionsLetters",$this->optionIndexLetters);
+    }
+
+    public function create(){
+        //dumpHtmlReadable($_POST);
+
+        $dbh = connectPDO();
+        $qo = new Questions();
+
+
+        $options=array();
+        foreach ($this->optionIndexLetters as $l){
+            $optionDetailKey="options_${l}";
+            $optionIsirightKey="${l}_is_right";
+
+            if(!empty($_POST[$optionDetailKey])){
+
+                $opion=array('content'=>$_POST[$optionDetailKey]);
+
+                if(!empty($_POST[$optionIsirightKey])){
+                    $opion['is_right']=1;
+                }
+                else{
+                    $opion['is_right']=0;
+                }
+
+                $options[]=$opion;
+            }
+
+        }
+
+        $defaultQuestionType=0;
+
+        if(!empty($options) && !empty($_POST['detail'])){
+            $qid=$qo->addQuestion($dbh,$defaultQuestionType,0,$_POST['associate_id'],$_POST['level'],$_POST['detail'],"",$options);
+
+            if(empty($qid)){
+                $this->set("errorMessage","db error");
+                $this->setView("error/general_error");
+            }
+            else{
+                $this->redirect("/admin_question/show?qid=${qid}");
+            }
+
+        }
+        else{
+            $this->set("errorMessage","detail can not be emtpy or at least have one option");
+            $this->setView("error/general_error");
+        }
+
+
+
+
+        //dumpHtmlReadable($options);
+
+
+
+
+
+    }
 }
 
 ?>

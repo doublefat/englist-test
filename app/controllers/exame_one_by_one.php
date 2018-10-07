@@ -70,11 +70,20 @@ class exame_one_by_oneController extends BasicController
         }
     }
 
+    var $exame_time_second=1*60; // 30 minutes;
+
     public function index()
     {
         if (empty($_SESSION["student"])) {
-            $_SESSION["student"] = array("id" => 5, "question_counter" => 0);
+            $_SESSION["student"] = array("id" => 5, "question_counter" => 0,"start_time"=>time());
+
         }
+
+        $now=time();
+        $remaining= ($_SESSION["student"]['start_time'] + $this->exame_time_second)-$now;
+
+
+        $this->set("remaining_time",$remaining);
     }
 
     public function one_question()
@@ -121,7 +130,9 @@ class exame_one_by_oneController extends BasicController
 
         $_SESSION["student"]["answers"][$_POST['question_id']]=array("demo"=>$_POST);
 
-        if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion) {
+
+
+        if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion && $_POST[time_out_flag]!=1) {
             echo "next";
         } else {
             echo "finish";
