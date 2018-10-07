@@ -9,7 +9,10 @@ class exame_one_by_oneController extends BasicController
 {
 
     var $maxQuestion = 5;
-
+    var $remainQuestion = 30;
+    var $current_level = 1;
+    var $current_Qcnt = 0;
+    
     public function pre_filter(&$methodName = null)
     {
         parent::pre_filter($methodName);
@@ -33,11 +36,7 @@ class exame_one_by_oneController extends BasicController
         $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, 1, array(0));    // 1 questions, level 1 (easy)
         $data = $qo->loadFullQuestionsWithOptions($dbh, $qs_1);
         $sel_question =array_values ($data) [0];
-//        dumpHtmlReadable($sel_question);
-   //     foreach ($data as $id => &$qua) {        // Pack all the question and options
-     //       $this->prepareQuestion($qua);
-       // }
-//        dumpHtmlReadable($sel_question);
+
         $this->prepareQuestion( $sel_question );
         
         dumpHtmlReadable($sel_question);            // Testing....
@@ -53,8 +52,7 @@ class exame_one_by_oneController extends BasicController
     {
         $questionDetail["question"]["level_word"] = $this->levelWords[$questionDetail["question"]['level']];
         $questionDetail["question"]["status_word"] = $this->statusWords[$questionDetail["question"]['disable']];
-        $questionDetail["question"]["q_cnt"] = $this->question_cnter;
-        $this->question_cnter++;
+        $questionDetail["question"]["q_cnt"] = $_SESSION["student"]["question_counter"];
 
         $i = 0;
         if (!empty ($questionDetail ["options"])) {
@@ -85,11 +83,12 @@ class exame_one_by_oneController extends BasicController
             $_SESSION["student"]["current_question"] = array("test" => "test" . $_SESSION["student"]["question_counter"], "question_id" => rand());
 
         }
-        
+        echo "From one_question :";
+        dumpHtmlReadable($_SESSION["student"]["question_counter"]);
         dumpHtmlReadable($_SESSION["student"]["current_question"]);
         $this->one_random_question ();
 //        $this->set("question", $_SESSION["student"]["current_question"]);
-         $this->setLayout("ajax.phtml");
+        $this->setLayout("ajax.phtml");
 
     }
 
