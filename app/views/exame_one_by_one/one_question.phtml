@@ -1,11 +1,11 @@
 
 <div>
     <form id="question_form">
-        <input type="hidden" name="question_id" value="<?= $this->question['question_id']?>"/>
-        A:<input type="checkbox" name="q_a" value="1"/>
-        B:<input type="checkbox" name="q_b" value="1"/>
+        <input type="hidden" name="question_id" value="<?= $this->question['question']['id']?>"/>
+        <h3><?= $this->question['question']['q_cnt'] ?>. <?= $this->question['question']['detail'] ?> </h3>
+        <? foreach ($this->question['options'] as $option): ?>
+	    <h4><input type = "checkbox" name = "question_<?= $this->question['question']['id']?>[]" value = "<?=$option['id']?>" /> <?= $option['index'] ?>. <?= $option['content'] ?></h4>
+        <? endforeach; ?>
+        <input type="hidden" name="question_id" value="<?= $this->question['question']['id']?>"/>
     </form>
 </div>
-
-
-

@@ -22,23 +22,26 @@ class exame_one_by_oneController extends BasicController
 
     var $levelWords = array(1 => "Easy", 2 => "Medium", 3 => "Difficult");
 
-    public function old_index()
-    {
+    private function one_random_question () {
         // please refer app/controllers/test.php
         $dbh = connectPDO();
         //load easy question
-        $easy = Array(); //TODO
         $qo = new Questions();
         $total = $qo->countByLevel($dbh, 1);
 
         // Request for an easy question and the coresponding options
         $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, 1, array(0));    // 1 questions, level 1 (easy)
         $data = $qo->loadFullQuestionsWithOptions($dbh, $qs_1);
-        foreach ($data as $id => &$qua) {        // Pack all the question and options
-            $this->prepareQuestion($qua);
-        }
-        dumpHtmlReadable($data);            // Testing....
-        $this->set('data', $data);            // Send data to html
+        $sel_question =array_values ($data) [0];
+//        dumpHtmlReadable($sel_question);
+   //     foreach ($data as $id => &$qua) {        // Pack all the question and options
+     //       $this->prepareQuestion($qua);
+       // }
+//        dumpHtmlReadable($sel_question);
+        $this->prepareQuestion( $sel_question );
+        
+        dumpHtmlReadable($sel_question);            // Testing....
+        $this->set('question', $sel_question);            // Send data to html
         echo '<hr/>';
     }
 
@@ -69,7 +72,6 @@ class exame_one_by_oneController extends BasicController
 
     public function index()
     {
-
         if (empty($_SESSION["student"])) {
             $_SESSION["student"] = array("id" => 5, "question_counter" => 0);
         }
@@ -83,9 +85,11 @@ class exame_one_by_oneController extends BasicController
             $_SESSION["student"]["current_question"] = array("test" => "test" . $_SESSION["student"]["question_counter"], "question_id" => rand());
 
         }
+        
         dumpHtmlReadable($_SESSION["student"]["current_question"]);
-        $this->set("question", $_SESSION["student"]["current_question"]);
-        $this->setLayout("ajax.phtml");
+        $this->one_random_question ();
+//        $this->set("question", $_SESSION["student"]["current_question"]);
+         $this->setLayout("ajax.phtml");
 
     }
 
