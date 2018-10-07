@@ -1,32 +1,66 @@
-<script type="text/javascript" >
-    $(document).ready(function() {
+<script type="text/javascript">
+    var stop_time = new Date().getTime() / 1000 +<?= $this->remaining_time?>;
+
+    function submitQuestion() {
+        $.ajax({
+            type: "POST",
+            url: "<?=$this->popUrl("exame_one_by_one/submit")?>",
+            data: $("#question_form").serialize(), // serializes the form's elements.
+            success: function (data) {
+                if (data === "next") {
+                    $('#question_area').load('<?=$this->popUrl("exame_one_by_one/one_question")?>');
+                }
+                else if (data == "finish") {
+                    window.location.href = "<?=$this->popUrl("exame_one_by_one/finish")?>";
+                }
+                else {
+                    alert("Unknow command:" + data); // show response from the php script.
+                }
+
+            }
+        });
+    }
+
+    var stopTimer = false;
+    $(document).ready(function () {
         $('#question_area').load('<?=$this->popUrl("exame_one_by_one/one_question")?>');
         $("#sub_bt").click(function () {
-            $.ajax({
-                type: "POST",
-                url: "<?=$this->popUrl("exame_one_by_one/submit")?>",
-                data: $("#question_form").serialize(), // serializes the form's elements.
-                success: function(data)
-                {
-                    if(data==="next"){
-                        $('#question_area').load('<?=$this->popUrl("exame_one_by_one/one_question")?>');
-                    }
-                    else if(data=="finish"){
-                        window.location.href = "<?=$this->popUrl("exame_one_by_one/finish")?>";
-                    }
-                    else{
-                        alert("Unknow command:"+data); // show response from the php script.
-                    }
-
-                }
-            });
-
+            submitQuestion();
         });
+
+
+        var x = setInterval(function () {
+
+            if (!stopTimer) {
+                var now = new Date().getTime() / 1000;
+                var distance = stop_time - now;
+
+                // Time calculations for days, hours, minutes and seconds
+
+                var minutes = Math.floor(distance / 60);
+                var seconds = Math.floor(distance % 60);
+
+                // Display the result in the element with id="demo"
+                document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+
+                // If the count down is finished, write some text
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("timer").innerHTML = "EXPIRED";
+                    stopTimer = true;
+                    $("#time_out_flag").val(1);
+                    submitQuestion();
+                }
+            }
+
+
+        }, 500);
     });
+
 </script>
 
 <style>
-    #parent:{
+    #parent: {
         padding-bottom: 10px;
         padding-left: 10px;
         padding-right: 10px;
@@ -35,13 +69,17 @@
     }
 </style>
 
-<div id="parent" style="background-color: #ffe45c" >
+<div>
+    <label>Timer:</label>
+    <h2 id="timer"></h2>
+</div>
+<div id="parent" style="background-color: #ffe45c">
 
     <div id="question_area">
 
     </div>
     <div>
         <button id="sub_bt">Submit my answer</button>
-        <button >test</button>
+        <button>test</button>
     </div>
 </div>

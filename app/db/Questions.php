@@ -258,7 +258,7 @@ class Questions
 
                 }
                 $dbh->commit();
-                return true;
+                return $qId;
             } else {
                 $dbh->rollBack();
                 return false;

@@ -1,0 +1,42 @@
+<form action="/admin_question/create" method="post">
+
+
+    <div>
+
+        <label>Level:</label>
+        <select name="level">
+            <? foreach ($this->levelWords as $lId => $lWord): ?>
+                <option value="<?= $lId ?>"><?= $lWord ?></option>
+            <? endforeach; ?>
+
+        </select>
+        <label>associate_id</label>
+        <input name="associate_id" value="0" type="text"/>
+
+        <br/>
+        <br/>
+        <label>Question:</label>
+        <br/>
+        <textarea name="detail" cols="100"></textarea>
+    </div>
+
+    <div>
+
+        <? foreach ($this->optionsLetters as $l): ?>
+            <div>
+                <label>option <?= $l ?> (Leave it empty if you do not need it)</label>
+                <br/>
+                <textarea name="options_<?= $l ?>" cols="80"></textarea>
+                <label>Is right:</label>
+                <input type="checkbox" value="1" name="i<?= $l ?>_is_right"/>
+            </div>
+
+        <? endforeach; ?>
+
+    </div>
+    <div>
+        <button type="submit">Save</button>
+
+    </div>
+
+</form>
