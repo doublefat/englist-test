@@ -38,10 +38,11 @@ class exame_one_by_oneController extends BasicController
         $sel_question =array_values ($data) [0];
 
         $this->prepareQuestion( $sel_question );
-        dumpHtmlReadable($sel_question);            // Testing....
+
         
-        $this->set('question', $sel_question);            // Send data to html
-        echo '<hr/>';
+
+        return $sel_question;
+
     }
 
 
@@ -94,10 +95,11 @@ class exame_one_by_oneController extends BasicController
 
         }
         echo "From one_question :";
-        dumpHtmlReadable($_SESSION["student"]["question_counter"]);
+
+
+        $_SESSION["student"]["current_question"]=$this->one_random_question ();
         dumpHtmlReadable($_SESSION["student"]["current_question"]);
-        $this->one_random_question ();
-//        $this->set("question", $_SESSION["student"]["current_question"]);
+        $this->set("question", $_SESSION["student"]["current_question"]);
         $this->setLayout("ajax.phtml");
 
     }
@@ -118,17 +120,23 @@ class exame_one_by_oneController extends BasicController
         dumpHtmlReadable($_SESSION["student"]["score"]);
     }
 
+
+
     public function submit () {
         MLog::iExport($_POST);
-        MLog::i("Question id:" . $_POST['question_id']);
+        $qid=$_POST['question_id'];
+        MLog::i("Question id:" .$qid );
+
+        $answerKey="question_${qid}";
+        $userAnswers=empty($_POST[$answerKey])?array():$_POST[$answerKey];
 
         if(empty($_SESSION["student"]["answers"])) {
             $_SESSION["student"]["answers"]=array();
         }
         // Get the POST values from sub_bt(Submit my answer) button
-        $_SESSION["student"]["answers"][$_POST['question_id']]=array("demo"=>$_POST);
-        $questionId = $_POST['question_id'];
-        $this->checkAnswer($_POST['question_id']);
+        $_SESSION["student"]["answers"][$qid]=$userAnswers;
+
+        $this->checkAnswer($qid,$userAnswers);
         $_SESSION["student"]["answers"][$_POST['question_id']]["score"] = 1;
 
 
@@ -144,25 +152,21 @@ class exame_one_by_oneController extends BasicController
         $this->view->setTemplate("exame_one_by_one/blank.phtml");
     }
 
-    private function checkAnswer ($qId) {
-        $dbh = connectPDO();
-        $qo = new Questions();
-        $question[0] = $qId;
+    private function checkAnswer ($qid,$userAnswers) {
 
-        // Request for the question and the coresponding options by Id
-        MLog::i("qId :");
-        MLog::iExport ( $qId );
-        $data = $qo->loadFullQuestionsWithOptions($dbh, $question);
-        $sel_question = array_values ($data) [0];
+
+
+        $sel_question = $_SESSION["student"]["current_question"];
+        MLog::i("---------------quetion:${qid}");
+        MLog::iExport($userAnswers);
+        MLog::iExport($sel_question);
 
         $q_opt_check = 0;  // 0 : unchecked/right, 1 : wrong
-        MLog::i("student answer :");
-        MLog::iExport ($_SESSION['student']['answers'][$qId]['demo']['question_'.$qId]);
-        MLog::i("sel_question options :");
-        MLog::iExport ( $sel_question ['options'] );
-        foreach ( $sel_question ['options'] as $q_option ) {
-            MLog::i('sel_question q_option id :');
-            MLog::iExport ( $q_option ['id'] );
+
+//        MLog::iExport ( $sel_question ['options'] );
+//        foreach ( $sel_question ['options'] as $q_option ) {
+//            MLog::i('sel_question q_option id :');
+//            MLog::iExport ( $q_option ['id'] );
 //            if (  (  $q_option ['is_right'] == 0
 //                 &&  in_array ( $q_option ['id'], $_SESSION["student"]["answers"][$qId]["demo"]['question_'.$qId] ) )
 //               || (  $q_option ['is_right'] == 1
@@ -171,7 +175,7 @@ class exame_one_by_oneController extends BasicController
 //                $q_opt_check = 1;
 //                break;
 //            }
-        }
+//        }
     }
 
 }

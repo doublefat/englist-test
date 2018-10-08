@@ -10,7 +10,7 @@ include_once realpath($currentDir . '/../db') . '/Teacher.php';
 class Teacher_mngController extends AuthRequiredController
 {
 
-    static  $admin_types = array(2 => "general", 1 => "admin", 0 => "disable");
+    static $admin_types = array(2 => "general", 1 => "admin", 0 => "disable");
 
     public function pre_filter(&$methodName = null)
     {
@@ -21,7 +21,7 @@ class Teacher_mngController extends AuthRequiredController
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
 
-        $this->set("admin_types",Teacher_mngController::$admin_types );
+        $this->set("admin_types", Teacher_mngController::$admin_types);
 
         $this->setLayout("teacher_layout.phtml");
         return true;
@@ -170,8 +170,8 @@ class Teacher_mngController extends AuthRequiredController
             $this->view->setTemplate("error/general_error.phtml");
         } else {
             $t = new Teacher();
-            $r=$t->update($this->dbh, $id, $type, $first, $last, 0, "");
-            MLog::iExport($r);
+            $r = $t->update($this->dbh, $id, $type, $first, $last, 0, "");
+
             $this->redirect("/teacher_mng/index");
         }
 
@@ -206,6 +206,46 @@ class Teacher_mngController extends AuthRequiredController
 
     }
 
+    public function prepare_reset_password()
+    {
+
+        $this->set("errorMessage", '');
+    }
+
+    public function reset_my_password()
+    {
+        $user = $_SESSION['teacher_info'];
+
+        $em = "";
+
+        if (empty($_POST["old_password"])) {
+            $em = "current password can not be empty";
+        }
+        if (empty($_POST["new_password1"])) {
+            $em = "new password can not be empty";
+        }
+        if (empty($_POST["new_password2"])) {
+            $em = "new password can not be empty";
+        }
+        if (!empty($em) && $_POST["new_password1"] !== $_POST["new_password2"]) {
+            $em = "two new password is not the same";
+        }
+
+        if(!empty($em) && md5($_POST["new_password2"]) !== $user['password']){
+            $em = "your enter wrong current password";
+        }
+
+        if(empty($em)){
+            $t = new Teacher();
+            $t->updatePassword($this->dbh, $user['id'], md5($_POST["new_password2"]));
+            $this->redirect("/admin_question/index");
+        }
+
+        else{
+            $this->set("errorMessage", $em);
+            $this->setView("teacher_mng/prepare_reset_password");
+        }
+    }
 
 }
 
