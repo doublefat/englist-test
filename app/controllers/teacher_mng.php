@@ -1,13 +1,16 @@
 <?php
 
+$currentDir = dirname(__FILE__);
 include_once realpath(dirname(__FILE__)) . '/shared/auth.php';
 include_once realpath($currentDir . '/../db') . '/Teacher.php';
 
+//md5 123456 = e10adc3949ba59abbe56e057f20f883e
+
 //class Teacher_mngController extends AuthRequiredController {
-class Teacher_mngController extends HtmlController
+class Teacher_mngController extends AuthRequiredController
 {
 
-    var $admin_types = array(2 => "general", 1 => "admin", 0 => "disable");
+    static  $admin_types = array(2 => "general", 1 => "admin", 0 => "disable");
 
     public function pre_filter(&$methodName = null)
     {
@@ -20,6 +23,7 @@ class Teacher_mngController extends HtmlController
 
         $this->set("admin_types", $this->admin_types);
 
+        $this->setLayout("teacher_layout.phtml");
         return true;
     }
 

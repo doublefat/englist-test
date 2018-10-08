@@ -95,7 +95,12 @@ class Teacher
             $stmt_rv = $stmt->execute();
 
             if ($stmt_rv) {
-                return $stmt->fetchAll();
+                $re = $stmt->fetchAll();
+                if (isset($re[0])) {
+                    return $re[0];
+                } else {
+                    return false;
+                }
             } else {
                 MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
 
@@ -434,6 +439,62 @@ class Teacher
             throw $x;
         }
 
+    }
+
+    public function loadById($dbh, $id)
+    {
+
+
+        $runQuery = "no query yet";
+        try {
+            $selectColumns = " SELECT ";
+            $selectColumns .= "`id` `id`";
+            $selectColumns .= ", `amdin_type` `amdin_type`";
+            $selectColumns .= ", `first_name` `first_name`";
+            $selectColumns .= ", `last_name` `last_name`";
+            $selectColumns .= ", `teacher_id` `teacher_id`";
+            $selectColumns .= ", `create_time` `create_time`";
+            $selectColumns .= ", `update_time` `update_time`";
+            $selectColumns .= ", `email` `email`";
+            $selectColumns .= ", `password` `password`";
+            $selectColumns .= ", `extra` `extra`";
+            $queryBase = " FROM ";
+            $queryBase .= "{$this->TESTING_TEACHERS}";
+            $queryBase .= " WHERE " . '`id` = :id';
+
+
+            $order_clause = "";
+
+
+            $limit_clause = "";
+
+
+            $runQuery = $selectColumns . $queryBase . $order_clause . $limit_clause;
+
+            //echo $runQuery."\n";
+
+            $stmt = $dbh->prepare($runQuery);
+
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt_rv = $stmt->execute();
+
+            if ($stmt_rv) {
+                $re = $stmt->fetchAll();
+                if (isset($re[0])) {
+                    return $re[0];
+                } else {
+                    return null;
+                }
+            } else {
+                MLog::e('db error info:' . var_export($stmt->errorInfo(), true) . " query:" . $runQuery);
+
+                return false;
+            }
+        } catch (PDOException $x) {
+            MLog::e('db error info:' . $x->getMessage() . " query:" . $runQuery);
+
+            throw $x;
+        }
     }
 
 }
