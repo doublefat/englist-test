@@ -1,7 +1,7 @@
 <?php
-
+$currentDir = dirname(__FILE__);
 include_once realpath(dirname(__FILE__)) . '/html.php';
-
+include_once realpath($currentDir . '/../../db') . '/Teacher.php';
 class AuthRequiredController extends HtmlController
 {
 
@@ -12,26 +12,31 @@ class AuthRequiredController extends HtmlController
         }
 
 
-        if (empty($_SESSION['user_info'])) {
+        if (empty($_SESSION['teacher_info']['id'])) {
             $this->redirect_url = "/";
             return false;
         }
 
 
-        $this->user_object = new db_user();
+        $this->tObj = new Teacher();
 
-        $this->user = $this->user_object->loadById($this->dbh, $_SESSION['user_info']['id']);
-        $_SESSION['user_info'] = $this->user;
-        $type = intval($this->user['user_type_id']);
+        $teacher = $this->tObj->loadById($this->dbh, $_SESSION['teacher_info']['id']);
 
 
-        if ($type < 60) {
+        if(intval($teacher['amdin_type'])===0){
+            //disable user
+            unset($_SESSION['teacher_info']);
             $this->redirect_url = "/";
             return false;
         }
+        else{
+            $_SESSION['teacher_info']=$teacher;
 
-        $this->set('user', $this->user);
+        }
 
+        $this->set('teacher',$teacher);
+
+        //dumpHtmlReadable($teacher);
 
         return true;
     }

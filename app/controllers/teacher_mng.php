@@ -1,13 +1,16 @@
 <?php
 
+$currentDir = dirname(__FILE__);
 include_once realpath(dirname(__FILE__)) . '/shared/auth.php';
 include_once realpath($currentDir . '/../db') . '/Teacher.php';
 
+//md5 123456 = e10adc3949ba59abbe56e057f20f883e
+
 //class Teacher_mngController extends AuthRequiredController {
-class Teacher_mngController extends HtmlController
+class Teacher_mngController extends AuthRequiredController
 {
 
-    var $admin_types = array(2 => "general", 1 => "admin", 0 => "disable");
+    static  $admin_types = array(2 => "general", 1 => "admin", 0 => "disable");
 
     public function pre_filter(&$methodName = null)
     {
@@ -18,8 +21,9 @@ class Teacher_mngController extends HtmlController
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
 
-        $this->set("admin_types", $this->admin_types);
+        $this->set("admin_types",Teacher_mngController::$admin_types );
 
+        $this->setLayout("teacher_layout.phtml");
         return true;
     }
 
@@ -36,6 +40,8 @@ class Teacher_mngController extends HtmlController
 
     public function edit()
     {
+
+
         $teacherDb = new Teacher();
         if (!empty($_REQUEST['tid'])) {
             $t = $teacherDb->load($this->dbh, $_REQUEST['tid']);
@@ -164,7 +170,8 @@ class Teacher_mngController extends HtmlController
             $this->view->setTemplate("error/general_error.phtml");
         } else {
             $t = new Teacher();
-            $t->update($this->dbh, $id, $type, $first, $last, 0, "");
+            $r=$t->update($this->dbh, $id, $type, $first, $last, 0, "");
+            MLog::iExport($r);
             $this->redirect("/teacher_mng/index");
         }
 

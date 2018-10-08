@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <title><?= $this->title ?></title>
+    <?= $this->scripts; ?>
+    <?= $this->styles; ?>
+    <link rel='stylesheet' type='text/css' href='/css/default.css'>
+
+
+    <style>
+        #html_content_header_line {
+            float: top;
+            width: 100%;
+            height: 30px;
+            background-color: #cccccc;
+            padding-top: 2px;
+        }
+
+        #html_content_content {
+            float: right;
+            width: 80%;
+
+            background-color: #ffe45c
+        }
+
+        #html_content_navigate {
+            float: left;
+            width: 20%;
+            height: 100%;
+            background-color: #1c94c4
+        }
+
+        .menu {
+            display: block;
+            float: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="html_content_header_line">
+    <div style="float: "
+    <div style="width: 30%;height: 100%; float: left"></div>
+    <div style="width: 40%;height: 100%; float: left;text-align: center"><span style="">Manager function</span></div>
+    <div style="width: 30%;height: 100%; float: right">
+        <a style="float: right;margin-right: 30px" href="<?= $this->popUrl('login/logout') ?>">Logout</a>
+        <span style="float: right;margin-right: 20px">Hello <?= $this->teacher['first_name'] ?> <?= $this->teacher['last_name'] ?></span>
+    </div>
+
+
+</div>
+
+<div id="html_content_navigate" style="">
+
+    <? include realpath(dirname(__FILE__)) . '/teacher_menu.phtml'; ?>
+
+
+</div>
+
+<div id="html_content_content" style="">
+    <div style="float: none">
+        <?= $this->content; ?>
+    </div>
+
+</div>
+
+
+</body>
+</html>

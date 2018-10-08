@@ -1,12 +1,15 @@
 <?php
 
+$currentDir = dirname(__FILE__);
+
+include_once realpath($currentDir . '/../db') . '/Teacher.php';
 include_once realpath(dirname(__FILE__)) . '/shared/html.php';
 
 class LoginController extends HtmlController {
 
     public function index() {
 
-        if (!empty($_SESSION['user_info'])) {
+        if (!empty($_SESSION['teacher_info'])) {
 
             //TODO
         }
@@ -21,39 +24,41 @@ class LoginController extends HtmlController {
         $this->view = null;
         try {
 
-            if (empty($_POST['login_name'])) {
+            if (empty($_POST['email'])) {
                 throw new Exception("email is empty", IndexController::EXCEPTION_CODE_USER_ERROR);
             }
-            if (empty($_POST['login_password'])) {
+            if (empty($_POST['password'])) {
                 throw new Exception("password is emtpy", IndexController::EXCEPTION_CODE_USER_ERROR);
             }
 
            
 
-            $userObj = new db_user();
+            $userObj = new Teacher();
 
           
-            $user = $userObj->loadByEmailNamePassword($this->dbh, md5($_POST['login_password']), $_POST['login_name'], $_POST['login_name']);
+            $user = $userObj->verifyUser($this->dbh,$_POST['email'], md5($_POST['password']), $_POST['login_name']);
 
 
 
             if ($user === false) {
-                $errorMessage= 'Eamil/Password Error';
+                $this->set("errorMessage", 'Eamil/Password Error');
+                $this->setView("index/index");
             } else {
 
-                $_SESSION['user_info'] = $user;
-                //TODO
+                $_SESSION['teacher_info'] = $user;
+
+                $this->redirect_url = "/";
             }
         } catch (Exception $exc) {
             MLog::eExport($exc->getTraceAsString(), $exc->getMessage());
-            $errorMessage=  '系统错误';
-            //TODO
+            $this->set("errorMessage", "system error");
+            $this->setView("index/index");
         }
     }
 
 
     public function logout() {
-        unset($_SESSION['user_info']);
+        unset($_SESSION['teacher_info']);
         $this->redirect_url = "/";
     }
 

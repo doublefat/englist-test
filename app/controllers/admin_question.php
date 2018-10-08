@@ -1,10 +1,12 @@
 <?php
 
 $currentDir = dirname(__FILE__);
+
+include_once realpath(dirname(__FILE__)) . '/shared/auth.php';
 include_once realpath($currentDir . '/../system') . '/dbfunction.php';
 include_once realpath($currentDir . '/../db') . '/Questions.php';
 
-class Admin_questionController extends BasicController
+class Admin_questionController extends AuthRequiredController
 {
 
     var $optionIndexLetters = array("A", "B", "C", "D", "E", "F", "G", "H", "I");
@@ -20,6 +22,7 @@ class Admin_questionController extends BasicController
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
         $this->set("levelWords", $this->levelWords);
+        $this->setLayout("teacher_layout.phtml");
     }
 
     public function index()

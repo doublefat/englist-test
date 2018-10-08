@@ -1,1 +1,30 @@
-<a href="/admin_question/index"> Question List</a>
+<style>
+    .error_message:{
+        color: #cd0a0a;
+    }
+</style>
+<div align="center">
+    <div class="error_message"><?= $this->errorMessage?></div>
+    <div>
+        <? if($this->show_login):?>
+        <form action="/login/login" method="post">
+            <label>Teacher email:</label><input type="text" name="email"/>
+            <label>password:</label><input type="password" name="password"/>
+            <button type="submit">Login</button>
+        </form>
+        <?else:?>
+            <a href="/admin_question/index"> Question List</a>
+        <?endif;?>
+    </div>
+    <hr/>
+    <h1>Or</h1>
+    <hr/>
+    <div>
+        <h2>Start Test</h2>
+        <form action="/login/student_login" method="post">
+            <label>Student Name:</label><input type="text" name="sname"/>
+            <label>Student ID:</label><input type="text" name="sid"/>
+            <button type="submit">Start Exam</button>
+        </form>
+    </div>
+</div>
