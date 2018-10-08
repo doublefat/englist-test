@@ -158,8 +158,8 @@ class exame_one_by_oneController extends BasicController
         $q_opt_check = 0;  // 0 : unchecked/right, 1 : wrong
         MLog::i("student answer :");
         MLog::iExport ($_SESSION['student']['answers'][$qId]['demo']['question_'.$qId]);
-        MLog::i("sel_question options :");
-        MLog::iExport ( $sel_question ['options'] );
+        MLog::i("sel_question :");
+        MLog::iExport ( $sel_question );
         foreach ( $sel_question ['options'] as $q_option ) {
             MLog::i('sel_question q_option id :');
             MLog::iExport ( $q_option ['id'] );
