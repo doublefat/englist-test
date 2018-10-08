@@ -36,6 +36,7 @@ class AuthRequiredController extends HtmlController
 
         $this->set('teacher',$teacher);
 
+        //dumpHtmlReadable($teacher);
 
         return true;
     }

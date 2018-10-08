@@ -10,11 +10,18 @@
 </div>
 
 
-<? if($this->teacher['admin_type']==1):?>
+<? if($this->teacher['amdin_type']==1):?>
 <div class='menu'>
     <a href="<?= $this->popUrl('teacher_mng/index'); ?>">Manager Teacher Account</a>
 
-
 </div>
 
+
 <?endif;?>
+
+
+<div class='menu'>
+
+    <a href="<?= $this->popUrl(''); ?>">Main Page</a>
+
+</div>

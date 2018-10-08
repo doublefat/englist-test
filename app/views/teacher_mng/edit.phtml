@@ -18,7 +18,7 @@
         <div>
 
 
-            <select name="type">
+            <select name="type" id="type">
                 <? foreach ($this->admin_types as $value => $name): ?>
                     <option value='<?= $value?>' <? if (isset($value) && intval($value) == $this->type): ?>selected="selected"<? endif; ?>><?= $name; ?></option>
                 <? endforeach; ?>

@@ -21,7 +21,7 @@ class Teacher_mngController extends AuthRequiredController
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
 
-        $this->set("admin_types", $this->admin_types);
+        $this->set("admin_types",Teacher_mngController::$admin_types );
 
         $this->setLayout("teacher_layout.phtml");
         return true;
@@ -40,6 +40,8 @@ class Teacher_mngController extends AuthRequiredController
 
     public function edit()
     {
+
+
         $teacherDb = new Teacher();
         if (!empty($_REQUEST['tid'])) {
             $t = $teacherDb->load($this->dbh, $_REQUEST['tid']);
@@ -168,7 +170,8 @@ class Teacher_mngController extends AuthRequiredController
             $this->view->setTemplate("error/general_error.phtml");
         } else {
             $t = new Teacher();
-            $t->update($this->dbh, $id, $type, $first, $last, 0, "");
+            $r=$t->update($this->dbh, $id, $type, $first, $last, 0, "");
+            MLog::iExport($r);
             $this->redirect("/teacher_mng/index");
         }
 
