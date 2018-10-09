@@ -145,19 +145,23 @@ class exame_one_by_oneController extends BasicController
         }
         // Get the POST values from sub_bt(Submit my answer) button
         $_SESSION["student"]["answers"][$qid] = $userAnswers;
-
+        $_SESSION["student"]["current_level_total"]++;
+        $_SESSION['student']['question_counter']++;
         if($this->checkAnswer($qid, $userAnswers)){
             /// student is correct
             /// TODO update score
-            $_SESSION["student"]["current_level_total"]++;
             $_SESSION["student"]["current_level_correct"]++;
-//-----
-            MLog::i( "current_level", $_SESSION["student"]["current_level"] );
-            MLog::i( "levelScore", $this->levelScore [$_SESSION["student"]["current_level"]] );
-//--------------------
             $_SESSION["student"]["score"] += $this->levelScore [$_SESSION["student"]["current_level"]];
+//-----
+//            MLog::i( "[submit]current_level ${_SESSION["student"]["current_level"]}" );
+//            MLog::i( "[submit]level_correct ${_SESSION["student"]["current_level"]}" );
+            MLog::i( "[submit] level, score :" );
+            MLog::iExport ( $_SESSION["student"]["score"] );
+            MLog::iExport ( $_SESSION["student"]["current_level"] );
+//--------------------
             
-            if( $_SESSION["student"]["current_level_total"] >10 ){
+            
+            if( $_SESSION["student"]["current_level_total"] >=10 ){
                 $corretRate=floatval($_SESSION["student"]["current_level_correct"])/floatval($_SESSION["student"]["current_level_total"])*100;
                 if($corretRate > 70){
                     //upgrade to next level
@@ -179,7 +183,6 @@ class exame_one_by_oneController extends BasicController
             /// student is wrong, may do nothing
         }
         
-        $_SESSION['student']['question_counter']++;
         if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion && $_POST['time_out_flag'] != 1) {
             echo "next";
         } else {
