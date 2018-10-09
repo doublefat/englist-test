@@ -52,7 +52,6 @@ class exame_one_by_oneController extends BasicController
 
         $this->prepareQuestion($sel_question);
 
-
         return $sel_question;
 
     }
@@ -109,7 +108,6 @@ class exame_one_by_oneController extends BasicController
 
         }
 
-
         dumpHtmlReadable($_SESSION["student"]["current_question"]);
         $this->set("question", $_SESSION["student"]["current_question"]);
         $this->setLayout("ajax.phtml");
@@ -153,7 +151,11 @@ class exame_one_by_oneController extends BasicController
             /// TODO update score
             $_SESSION["student"]["current_level_total"]++;
             $_SESSION["student"]["current_level_correct"]++;
-            $_SESSION["student"]["score"] += $levelScore [$_SESSION["student"]["current_level"]];
+//-----
+            MLog::i( "current_level", $_SESSION["student"]["current_level"] );
+            MLog::i( "levelScore", $this->levelScore [$_SESSION["student"]["current_level"]] );
+//--------------------
+            $_SESSION["student"]["score"] += $this->levelScore [$_SESSION["student"]["current_level"]];
             
             if( $_SESSION["student"]["current_level_total"] >10 ){
                 $corretRate=floatval($_SESSION["student"]["current_level_correct"])/floatval($_SESSION["student"]["current_level_total"])*100;
@@ -196,31 +198,19 @@ class exame_one_by_oneController extends BasicController
         $sel_question = $_SESSION["student"]["current_question"];
         MLog::i("---------------quetion:${qid}");
         MLog::iExport($userAnswers);
-//        MLog::iExport($sel_question);;
 
-//        foreach ( $sel_question ['options'] as $q_option ) {
-//            MLog::i('sel_question q_option id :');
-//            MLog::iExport ( $q_option ['id'] );
-
-//        MLog::iExport ( $sel_question ['options'] );
         $correctOptions = array();
 
         MLog::i('sel_question :');
         MLog::iExport($sel_question);
 
-
         foreach ($sel_question ['options'] as $q_option) {
             MLog::i('sel_question q_option :');
-            MLog::iExport($q_option);
-//            
-//          
-//            
+            MLog::iExport($q_option);         
             if ($q_option ['is_right'] == 1) {
                 $correctOptions[intval($q_option['id'])] = 1;
             }
         }//end foreach
-
-        MLog::i("Hello!!");
 
         if (count($correctOptions) == count($userAnswers)) {
             $allRight = true;
