@@ -80,7 +80,7 @@ class exame_one_by_oneController extends BasicController
         }
     }
 
-    var $exame_time_second = 60 * 60; // 30 minutes;
+    var $exame_time_second = 30 * 60; // 30 minutes;
 
     public function index()
     {
