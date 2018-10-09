@@ -140,7 +140,7 @@ class exame_one_by_oneController extends BasicController
         $_SESSION["student"]["answers"][$_POST['question_id']]["score"] = 1;
 
 
-        if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion && $_POST[time_out_flag]!=1) {
+        if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion && $_POST['time_out_flag']!=1) {
             echo "next";
         } else {
             echo "finish";
@@ -154,39 +154,56 @@ class exame_one_by_oneController extends BasicController
 
     private function checkAnswer ($qid,$userAnswers) {
 
-
-
         $sel_question = $_SESSION["student"]["current_question"];
         MLog::i("---------------quetion:${qid}");
         MLog::iExport($userAnswers);
-        MLog::iExport($sel_question);
-
-        $q_opt_check = 0;  // 0 : unchecked/right, 1 : wrong
-<<<<<<< HEAD
-        MLog::i("student answer :");
-        MLog::iExport ($_SESSION['student']['answers'][$qId]['demo']['question_'.$qId]);
-        MLog::i("sel_question :");
-        MLog::iExport ( $sel_question );
-        foreach ( $sel_question ['options'] as $q_option ) {
-            MLog::i('sel_question q_option id :');
-            MLog::iExport ( $q_option ['id'] );
-=======
-
-//        MLog::iExport ( $sel_question ['options'] );
+//        MLog::iExport($sel_question);;
+        
 //        foreach ( $sel_question ['options'] as $q_option ) {
 //            MLog::i('sel_question q_option id :');
 //            MLog::iExport ( $q_option ['id'] );
->>>>>>> 1396dbab0aa339fa2038c59f1d5fc35d091dd324
-//            if (  (  $q_option ['is_right'] == 0
-//                 &&  in_array ( $q_option ['id'], $_SESSION["student"]["answers"][$qId]["demo"]['question_'.$qId] ) )
-//               || (  $q_option ['is_right'] == 1
-//                 && !in_array ( $q_option ['id'], $_SESSION["student"]["answers"][$qId]["demo"]['question_'.$qId] ) ) ) {
-//                MLog::i( 'Answer is Wrong');
-//                $q_opt_check = 1;
-//                break;
-//            }
-//        }
-    }
+
+//        MLog::iExport ( $sel_question ['options'] );
+        $correctOptions=array();
+        
+        MLog::i('sel_question :');
+        MLog::iExport ( $sel_question );        
+        
+        
+        foreach ( $sel_question ['options'] as $q_option ) {
+            MLog::i('sel_question q_option :');
+            MLog::iExport ( $q_option );
+//            
+//          
+//            
+            if (  $q_option ['is_right'] == 1 ) {
+               $correctOptions[ intval ( $q_option['id'] ) ] = 1;
+            }
+        }//end foreach
+        
+MLog::i ("Hello!!"); 
+
+        if ( count($correctOptions )==count($userAnswers) ) {
+            $allRight = true;
+            foreach ($userAnswers as $one) {
+                if ( empty ( $correctOptions [intval ($one) ] ) ) {
+                    //error
+                    $allRight = false;
+                    MLog::i("Answer Wrong");
+                    break;
+                }
+            }
+        }
+        else{
+            //error
+            MLog::i("Answer Wrong");
+            $allRight = false;
+        }
+
+        if ( $allRight == true ) {
+            MLog::i("Answer right!!");
+        }
+    }   
 
 }
 
