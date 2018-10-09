@@ -8,7 +8,7 @@ include_once realpath($currentDir . '/../db') . '/Questions.php';
 class exame_one_by_oneController extends BasicController
 {
 
-    var $maxQuestion = 5;
+    var $maxQuestion = 30;
     var $remainQuestion = 30;
     var $current_level = 1;
     var $current_Qcnt = 0;
@@ -24,6 +24,7 @@ class exame_one_by_oneController extends BasicController
     }
 
     var $levelWords = array(1 => "Easy", 2 => "Medium", 3 => "Difficult");
+    var $levelScore = array( 'easy' => 2, 'medium' => 3, 'diff' => 5 );
 
     private function one_random_question()
     {
@@ -152,28 +153,31 @@ class exame_one_by_oneController extends BasicController
             /// TODO update score
             $_SESSION["student"]["current_level_total"]++;
             $_SESSION["student"]["current_level_correct"]++;
-
+            $_SESSION["student"]["score"] += $levelScore [$_SESSION["student"]["current_level"]];
+            
             if( $_SESSION["student"]["current_level_total"] >10 ){
                 $corretRate=floatval($_SESSION["student"]["current_level_correct"])/floatval($_SESSION["student"]["current_level_total"])*100;
-                if($corretRate > 60){
+                if($corretRate > 70){
                     //upgrade to next level
+                    MLog::i("Student Lvel Up!!!!");
                     if($_SESSION["student"]["current_level"]=="easy"){
                         $_SESSION["student"]["current_level"]="medium";
+                        $_SESSION["student"]["current_level_total"] = 0;
+                        $_SESSION["student"]["current_level_correct"] = 0;
                     }
                     else if ($_SESSION["student"]["current_level"]=="medium"){
                         $_SESSION["student"]["current_level"]="diff";
-                    } else if ($_SESSION["student"]["current_level"] == "diff") {
-                        $_SESSION["student"]["current_level"] = "finished";
+                        $_SESSION["student"]["current_level_total"] = 0;
+                        $_SESSION["student"]["current_level_correct"] = 0;
                     }
                 }
-
             }
         }
         else{
             /// student is wrong, may do nothing
         }
-
-
+        
+        $_SESSION['student']['question_counter']++;
         if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion && $_POST['time_out_flag'] != 1) {
             echo "next";
         } else {
