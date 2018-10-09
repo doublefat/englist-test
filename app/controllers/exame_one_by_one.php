@@ -128,6 +128,13 @@ class exame_one_by_oneController extends BasicController
         dumpHtmlReadable($_SESSION["student"]["answers"]);
         echo "Score = ";
         dumpHtmlReadable($_SESSION["student"]["score"]);
+        if ( $_SESSION["student"]["score"] < 40 ) {
+            echo "ESL Level";
+        } else if ( $_SESSION["student"]["score"] < 60 ) {
+            echo "Basic Level";
+        } else {
+            echo "Advanced Level";
+        }
     }
 
 
