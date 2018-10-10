@@ -664,7 +664,7 @@ class Questions
 
     public function getByLevelWithoutUsedIds($dbh, $size,$level, $usedIds){
 
-
+        $notInIds=implode(",", $usedIds);
         $runQuery="no query yet";
         try {
             $selectColumns =" SELECT ";
@@ -679,7 +679,7 @@ class Questions
             $selectColumns .=", `update_time` `update_time`";
             $queryBase=" FROM ";
             $queryBase.="{$this->TESTING_QUESTION}";
-            $queryBase.=" WHERE " .'(`level` = :level) AND (`id` NOT IN ( :usedIds))';
+            $queryBase.=" WHERE " ."(`level` = :level) AND (`id` NOT IN ( ${notInIds}))";
 
             $order_clause=" order by rand() ";
 
@@ -692,7 +692,9 @@ class Questions
             $stmt = $dbh->prepare($runQuery);
 
             $stmt->bindParam(':level',$level,PDO::PARAM_INT);
-            $stmt->bindParam(':usedIds', implode(",", $usedIds),PDO::PARAM_INT);
+
+
+
             $stmt_rv = $stmt->execute();
 
             if ($stmt_rv) {
