@@ -4,8 +4,9 @@ $currentDir = dirname(__FILE__);
 include_once realpath($currentDir . '/../system') . '/dbfunction.php';
 include_once realpath($currentDir . '/../system') . '/log.php';
 include_once realpath($currentDir . '/../db') . '/Questions.php';
-
-class exame_one_by_oneController extends BasicController
+include_once realpath($currentDir . '/../db') . '/StudentExame.php';
+include_once realpath(dirname(__FILE__)) . '/shared/html.php';
+class exame_one_by_oneController extends HtmlController
 {
 
     var $maxQuestion = 30;
@@ -21,6 +22,11 @@ class exame_one_by_oneController extends BasicController
         $this->view->addInternalJs("jquery-ui-1.8.17.custom.min.js");
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
+
+        if(empty($_SESSION["student_id"])){
+            $this->redirect_url = "/";
+            return false;
+        }
     }
 
     var $levelWords = array(1 => "Easy", 2 => "Medium", 3 => "Difficult");
@@ -29,10 +35,10 @@ class exame_one_by_oneController extends BasicController
     private function one_random_question()
     {
         // please refer app/controllers/test.php
-        $dbh = connectPDO();
+
         //load easy question
         $qo = new Questions();
-        $total = $qo->countByLevel($dbh, 1);
+        $total = $qo->countByLevel($this->dbh, 1);
 
         // Request for a question and the coresponding options
 
@@ -46,9 +52,9 @@ class exame_one_by_oneController extends BasicController
             $level=3;
         }
 
-        $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, $level, $_SESSION["student"]["past_questions"] );    // 1 questions, level
-//        $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, $level, array (0) ); 
-        $data = $qo->loadFullQuestionsWithOptions($dbh, $qs_1);
+        $qs_1 = $qo->getByLevelWithoutUsedIds($this->dbh, 1, $level, $_SESSION["student"]["past_questions"] );    // 1 questions, level
+//        $qs_1 = $qo->getByLevelWithoutUsedIds($this->dbh, 1, $level, array (0) );
+        $data = $qo->loadFullQuestionsWithOptions($this->dbh, $qs_1);
         $sel_question = array_values($data) [0];
         $_SESSION["student"]["past_questions"][] = $sel_question ['id'];
 //MLog::iExport( $sel_question );
@@ -124,7 +130,7 @@ class exame_one_by_oneController extends BasicController
 
         //unset student
         unset($_SESSION["student"]);
-        $this->redirect("/exame_one_by_one/");
+        $this->redirect("/");
     }
 
     public function finish()
@@ -139,6 +145,10 @@ class exame_one_by_oneController extends BasicController
         } else {
             echo "Advanced Level";
         }
+        //save score
+
+        $se=new StudentExame();
+        $se->addStudentScore($this->dbh,"1",$_SESSION["student_id"],$_SESSION["student"]["score"],"");
     }
 
 
@@ -208,7 +218,13 @@ class exame_one_by_oneController extends BasicController
     private function checkAnswer($qid, $userAnswers)
     {
 
+        if(empty($_SESSION["student"]["current_question"])){
+            return false;
+        }
+
+
         $sel_question = $_SESSION["student"]["current_question"];
+
         MLog::i("---------------quetion:${qid}");
         MLog::iExport($userAnswers);
 
@@ -225,6 +241,8 @@ class exame_one_by_oneController extends BasicController
             }
         }//end foreach
 
+
+        $allRight = false;
         if (count($correctOptions) == count($userAnswers)) {
             $allRight = true;
             foreach ($userAnswers as $one) {
@@ -235,11 +253,14 @@ class exame_one_by_oneController extends BasicController
                     break;
                 }
             }
-            return $allRight;
-        } else {
-            //error
-           return false;
+
         }
+
+        //save it to database
+
+        $se=new StudentExame();
+        $se->saveOneQuestionRecord($this->dbh,1,$_SESSION["student_id"],$qid,$allRight?1:0,var_export($userAnswers,true),"");
+        return $allRight;
 
 
     }

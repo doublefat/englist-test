@@ -63,6 +63,16 @@ class LoginController extends HtmlController {
     }
 
 
+    public function student_login(){
+
+        $_SESSION['student_name']=$_POST['sname'];
+        $_SESSION['student_id']=$_POST['sid'];
+        unset($_SESSION["student"]);
+
+        $this->redirect("/exame_one_by_one/");
+
+    }
+
 
 
 
