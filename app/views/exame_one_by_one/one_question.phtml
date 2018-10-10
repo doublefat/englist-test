@@ -3,9 +3,9 @@
     <form id="question_form">
         <input type="hidden" name="question_id" value="<?= $this->question['question']['id']?>"/>
         <input type="hidden" name="time_out_flag" id="time_out_flag" value="0"/>
-        <h3><?= $this->question['question']['q_cnt'] ?>. <?= $this->question['question']['detail'] ?> </h3>
+        <h2><?= $this->question['question']['q_cnt'] ?>. <?= $this->question['question']['detail'] ?> </h2>
         <? foreach ($this->question['options'] as $option): ?>
-	    <h4><input type = "checkbox" name = "question_<?= $this->question['question']['id']?>[]" value = "<?=$option['id']?>" /> <?= $option['index'] ?>. <?= $option['content'] ?></h4>
+            <h3><input type = "checkbox" name = "question_<?= $this->question['question']['id']?>[]" value = "<?=$option['id']?>" /> <?= $option['index'] ?>. <?= $option['content'] ?></h3>
         <? endforeach; ?>
         <input type="hidden" name="question_id" value="<?= $this->question['question']['id']?>"/>
     </form>

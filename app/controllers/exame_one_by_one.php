@@ -56,7 +56,7 @@ class exame_one_by_oneController extends HtmlController
 //        $qs_1 = $qo->getByLevelWithoutUsedIds($this->dbh, 1, $level, array (0) );
         $data = $qo->loadFullQuestionsWithOptions($this->dbh, $qs_1);
         $sel_question = array_values($data) [0];
-        $_SESSION["student"]["past_questions"][] = $sel_question ['id'];
+        $_SESSION["student"]["past_questions"][] = $sel_question ['question']['id'];
 MLog::i("Question List:");
 MLog::iExport( $_SESSION["student"]["past_questions"] );
         
