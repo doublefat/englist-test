@@ -58,7 +58,7 @@ class exame_one_by_oneController extends HtmlController
         $sel_question = array_values($data) [0];
         $_SESSION["student"]["past_questions"][] = $sel_question ['id'];
 MLog::i("Question List:");
-MLog::iExport( $sel_question );
+MLog::iExport( $_SESSION["student"]["past_questions"] );
         
         $this->prepareQuestion($sel_question);
 
