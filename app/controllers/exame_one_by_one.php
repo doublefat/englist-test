@@ -46,10 +46,13 @@ class exame_one_by_oneController extends BasicController
             $level=3;
         }
 
-        $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, $level, array(0));    // 1 questions, level 1 (easy)
+        $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, $level, $_SESSION["student"]["past_questions"] );    // 1 questions, level
+//        $qs_1 = $qo->getByLevelWithoutUsedIds($dbh, 1, $level, array (0) ); 
         $data = $qo->loadFullQuestionsWithOptions($dbh, $qs_1);
         $sel_question = array_values($data) [0];
-
+        $_SESSION["student"]["past_questions"][] = $sel_question ['id'];
+//MLog::iExport( $sel_question );
+        
         $this->prepareQuestion($sel_question);
 
         return $sel_question;
@@ -92,6 +95,7 @@ class exame_one_by_oneController extends BasicController
             $_SESSION["student"]["current_level"] = "easy";
             $_SESSION["student"]["score"] = 0;
             $_SESSION["student"]["question_counter"] = 0;
+            $_SESSION["student"]["past_questions"] = array (0);
         }
 
         $now = time();
@@ -156,7 +160,6 @@ class exame_one_by_oneController extends BasicController
         $_SESSION['student']['question_counter']++;
         if($this->checkAnswer($qid, $userAnswers)){
             /// student is correct
-            /// TODO update score
             $_SESSION["student"]["current_level_correct"]++;
             $_SESSION["student"]["score"] += $this->levelScore [$_SESSION["student"]["current_level"]];
 //-----
