@@ -6,6 +6,7 @@ include_once realpath($currentDir . '/../system') . '/log.php';
 include_once realpath($currentDir . '/../db') . '/Questions.php';
 include_once realpath($currentDir . '/../db') . '/StudentExame.php';
 include_once realpath(dirname(__FILE__)) . '/shared/html.php';
+
 class exame_one_by_oneController extends HtmlController
 {
 
@@ -23,14 +24,14 @@ class exame_one_by_oneController extends HtmlController
         $this->view->addInternalCss("ui-lightness/jquery-ui-1.8.17.custom.css");
 
 
-        if(empty($_SESSION["student_id"])){
+        if (empty($_SESSION["student_id"])) {
             $this->redirect_url = "/";
             return false;
         }
     }
 
     var $levelWords = array(1 => "Easy", 2 => "Medium", 3 => "Difficult");
-    var $levelScore = array( 'easy' => 2, 'medium' => 3, 'diff' => 5 );
+    var $levelScore = array('easy' => 2, 'medium' => 3, 'diff' => 5);
 
     private function one_random_question()
     {
@@ -42,24 +43,22 @@ class exame_one_by_oneController extends HtmlController
 
         // Request for a question and the coresponding options
 
-        $level=-1;
-        if($_SESSION["student"]["current_level"]=="easy"){
-            $level=1;
-        }
-        else if ($_SESSION["student"]["current_level"]=="medium"){
-            $level=2;
+        $level = -1;
+        if ($_SESSION["student"]["current_level"] == "easy") {
+            $level = 1;
+        } else if ($_SESSION["student"]["current_level"] == "medium") {
+            $level = 2;
         } else if ($_SESSION["student"]["current_level"] == "diff") {
-            $level=3;
+            $level = 3;
         }
 
-        $qs_1 = $qo->getByLevelWithoutUsedIds($this->dbh, 1, $level, $_SESSION["student"]["past_questions"] );    // 1 questions, level
+        $qs_1 = $qo->getByLevelWithoutUsedIds($this->dbh, 1, $level, $_SESSION["student"]["past_questions"]);    // 1 questions, level
 //        $qs_1 = $qo->getByLevelWithoutUsedIds($this->dbh, 1, $level, array (0) );
         $data = $qo->loadFullQuestionsWithOptions($this->dbh, $qs_1);
         $sel_question = array_values($data) [0];
-        $_SESSION["student"]["past_questions"][] = $sel_question ['id'];
-MLog::i("Question List:");
-        MLog::iExport( $sel_question );
-        
+        $_SESSION["student"]["past_questions"][] = $sel_question["question"] ['id'];
+        MLog::i("Question List:--------------------------------");
+        MLog::iExport($sel_question);
         $this->prepareQuestion($sel_question);
 
         return $sel_question;
@@ -95,14 +94,14 @@ MLog::i("Question List:");
     public function index()
     {
         if (empty($_SESSION["student"])) {
-            $_SESSION["student"] = array( "start_time" => time());
+            $_SESSION["student"] = array("start_time" => time());
             $_SESSION["student"]["score"] = 0;
             $_SESSION["student"]["current_level_total"] = 0;
             $_SESSION["student"]["current_level_correct"] = 0;
             $_SESSION["student"]["current_level"] = "easy";
             $_SESSION["student"]["score"] = 0;
             $_SESSION["student"]["question_counter"] = 0;
-            $_SESSION["student"]["past_questions"] = array (0);
+            $_SESSION["student"]["past_questions"] = array(0);
         }
 
         $now = time();
@@ -139,17 +138,17 @@ MLog::i("Question List:");
         dumpHtmlReadable($_SESSION["student"]["answers"]);
         echo "Score = ";
         dumpHtmlReadable($_SESSION["student"]["score"]);
-        if ( $_SESSION["student"]["score"] < 40 ) {
+        if ($_SESSION["student"]["score"] < 40) {
             echo "ESL Level";
-        } else if ( $_SESSION["student"]["score"] < 60 ) {
+        } else if ($_SESSION["student"]["score"] < 60) {
             echo "Basic Level";
         } else {
             echo "Advanced Level";
         }
         //save score
 
-        $se=new StudentExame();
-        $se->addStudentScore($this->dbh,"1",$_SESSION["student_id"],$_SESSION["student"]["score"],"");
+        $se = new StudentExame();
+        $se->addStudentScore($this->dbh, "1", $_SESSION["student_id"], $_SESSION["student"]["score"], "");
     }
 
 
@@ -169,41 +168,39 @@ MLog::i("Question List:");
         $_SESSION["student"]["answers"][$qid] = $userAnswers;
         $_SESSION["student"]["current_level_total"]++;
         $_SESSION['student']['question_counter']++;
-        if($this->checkAnswer($qid, $userAnswers)){
+        if ($this->checkAnswer($qid, $userAnswers)) {
             /// student is correct
             $_SESSION["student"]["current_level_correct"]++;
             $_SESSION["student"]["score"] += $this->levelScore [$_SESSION["student"]["current_level"]];
 //-----
 //            MLog::i( "[submit]current_level ${_SESSION["student"]["current_level"]}" );
 //            MLog::i( "[submit]level_correct ${_SESSION["student"]["current_level"]}" );
-            MLog::i( "[submit] level, score :" );
-            MLog::iExport ( $_SESSION["student"]["score"] );
-            MLog::iExport ( $_SESSION["student"]["current_level"] );
+            MLog::i("[submit] level, score :");
+            MLog::iExport($_SESSION["student"]["score"]);
+            MLog::iExport($_SESSION["student"]["current_level"]);
 //--------------------
-            
-            
-            if( $_SESSION["student"]["current_level_total"] >=10 ){
-                $corretRate=floatval($_SESSION["student"]["current_level_correct"])/floatval($_SESSION["student"]["current_level_total"])*100;
-                if($corretRate > 70){
+
+
+            if ($_SESSION["student"]["current_level_total"] >= 10) {
+                $corretRate = floatval($_SESSION["student"]["current_level_correct"]) / floatval($_SESSION["student"]["current_level_total"]) * 100;
+                if ($corretRate > 70) {
                     //upgrade to next level
                     MLog::i("Student Lvel Up!!!!");
-                    if($_SESSION["student"]["current_level"]=="easy"){
-                        $_SESSION["student"]["current_level"]="medium";
+                    if ($_SESSION["student"]["current_level"] == "easy") {
+                        $_SESSION["student"]["current_level"] = "medium";
                         $_SESSION["student"]["current_level_total"] = 0;
                         $_SESSION["student"]["current_level_correct"] = 0;
-                    }
-                    else if ($_SESSION["student"]["current_level"]=="medium"){
-                        $_SESSION["student"]["current_level"]="diff";
+                    } else if ($_SESSION["student"]["current_level"] == "medium") {
+                        $_SESSION["student"]["current_level"] = "diff";
                         $_SESSION["student"]["current_level_total"] = 0;
                         $_SESSION["student"]["current_level_correct"] = 0;
                     }
                 }
             }
-        }
-        else{
+        } else {
             /// student is wrong, may do nothing
         }
-        
+
         if (intval($_SESSION["student"]["question_counter"]) < $this->maxQuestion && $_POST['time_out_flag'] != 1) {
             echo "next";
         } else {
@@ -219,7 +216,7 @@ MLog::i("Question List:");
     private function checkAnswer($qid, $userAnswers)
     {
 
-        if(empty($_SESSION["student"]["current_question"])){
+        if (empty($_SESSION["student"]["current_question"])) {
             return false;
         }
 
@@ -236,7 +233,7 @@ MLog::i("Question List:");
 
         foreach ($sel_question ['options'] as $q_option) {
             MLog::i('sel_question q_option :');
-            MLog::iExport($q_option);         
+            MLog::iExport($q_option);
             if ($q_option ['is_right'] == 1) {
                 $correctOptions[intval($q_option['id'])] = 1;
             }
@@ -259,8 +256,8 @@ MLog::i("Question List:");
 
         //save it to database
 
-        $se=new StudentExame();
-        $se->saveOneQuestionRecord($this->dbh,1,$_SESSION["student_id"],$qid,$allRight?1:0,var_export($userAnswers,true),"");
+        $se = new StudentExame();
+        $se->saveOneQuestionRecord($this->dbh, 1, $_SESSION["student_id"], $qid, $allRight ? 1 : 0, var_export($userAnswers, true), "");
         return $allRight;
 
 
