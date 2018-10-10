@@ -243,7 +243,7 @@ class Teacher_mngController extends AuthRequiredController
 
         else{
             $this->set("errorMessage", $em);
-            $this->setView("teacher_mng/prepare_reset_password");
+            $this->view->setTemplate("teacher_mng/prepare_reset_password.phtml");
         }
     }
 

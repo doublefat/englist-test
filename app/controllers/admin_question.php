@@ -213,7 +213,7 @@ class Admin_questionController extends AuthRequiredController
 
             if(empty($qid)){
                 $this->set("errorMessage","db error");
-                $this->setView("error/general_error");
+                $this->view->setTemplate("error/general_error.phtml");
             }
             else{
                 $this->redirect("/admin_question/show?qid=${qid}");
@@ -222,7 +222,7 @@ class Admin_questionController extends AuthRequiredController
         }
         else{
             $this->set("errorMessage","detail can not be emtpy or at least have one option");
-            $this->setView("error/general_error");
+            $this->view->setTemplate("error/general_error.phtml");
         }
 
 

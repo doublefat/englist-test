@@ -1,10 +1,8 @@
 <style>
-    .error_message:{
-        color: #cd0a0a;
-    }
+
 </style>
 <div align="center">
-    <div class="error_message"><?= $this->errorMessage?></div>
+    <div style="color: #cd0a0a"><?= $this->errorMessage?></div>
     <div>
         <? if($this->show_login):?>
         <form action="/login/login" method="post">
