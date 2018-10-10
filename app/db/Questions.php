@@ -692,7 +692,7 @@ class Questions
             $stmt = $dbh->prepare($runQuery);
 
             $stmt->bindParam(':level',$level,PDO::PARAM_INT);
-            $stmt->bindParam(':usedIds',$usedIds,PDO::PARAM_INT);
+            $stmt->bindParam(':usedIds', implode(",", $usedIds),PDO::PARAM_INT);
             $stmt_rv = $stmt->execute();
 
             if ($stmt_rv) {
